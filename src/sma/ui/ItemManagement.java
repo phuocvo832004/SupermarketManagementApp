@@ -8,8 +8,10 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 
 import sma.db.DBOperation;
+import sma.object.Category;
 import sma.object.Customer;
 import sma.object.Item;
+import sma.object.Measurement;
 
 import javax.swing.JLabel;
 import javax.swing.SwingConstants;
@@ -132,13 +134,28 @@ public class ItemManagement extends JFrame {
 		txtUnitPrice.setBounds(718, 92, 127, 22);
 		panel_1.add(txtUnitPrice);
 		
+		List<Category> categories = DBOperation.queryCategories(conn);
+		
 		JComboBox cbCategory = new JComboBox();
 		cbCategory.setBounds(716, 36, 129, 26);
 		panel_1.add(cbCategory);
 		
+		for(Category c : categories) {
+			
+			cbCategory.addItem(c.getCategory());
+			
+		}
+		
+		List<Measurement> measurements = DBOperation.queryMeasurement(conn);
 		JComboBox cbMeasurement = new JComboBox();
 		cbMeasurement.setBounds(108, 91, 129, 26);
 		panel_1.add(cbMeasurement);
+		
+		for(Measurement m : measurements) {
+			
+			cbMeasurement.addItem(m.getMeasurement());
+			
+		}
 		
 		JScrollPane scrollPane = new JScrollPane();
 		scrollPane.setBounds(10, 244, 855, 266);
@@ -166,7 +183,6 @@ public class ItemManagement extends JFrame {
 		scrollPane.setViewportView(table);
 		
 		table.setBounds(10, 458, 1, 1);
-		contentPane.add(table);
 		
 		JPanel panel_2 = new JPanel();
 		panel_2.setBounds(10, 518, 855, 162);

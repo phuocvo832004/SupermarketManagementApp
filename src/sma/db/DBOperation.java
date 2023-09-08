@@ -10,8 +10,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import sma.object.Category;
 import sma.object.Customer;
 import sma.object.Item;
+import sma.object.Measurement;
 
 public class DBOperation {
 
@@ -308,12 +310,71 @@ public class DBOperation {
 				item.setUnitPrice(unitPrice);
 				
 				items.add(item);
+				
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
+		
 		return items;
 		
 	}
-
+	
+	public static List<Category> queryCategories (Connection conn){
+		
+		String sql = "SELECT * FROM CATEGORIES";
+		
+		List<Category> categories = new ArrayList<Category>();
+		try {
+			Statement statement = conn.createStatement();
+			ResultSet result = statement.executeQuery(sql);
+			
+			while (result.next()){
+			        String category = result.getString("CATEGORY");
+			        
+			        Category category1 = new Category();
+			        category1.setCategory(category);
+			        categories.add(category1);
+			}
+			
+			
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return categories;
+	}
+	
+	public static List<Measurement> queryMeasurement(Connection conn) {
+		
+		String sql = "SELECT * FROM MEASUREMENTS";
+		
+		List<Measurement> measurements = new ArrayList<Measurement>();
+		
+		try {
+			Statement statement = conn.createStatement();
+			ResultSet result = statement.executeQuery(sql);
+			
+			while (result.next()){
+			        String measurement = result.getString("MEASUREMENT");
+			        
+			        Measurement measurement2 = new Measurement();
+			        measurement2.setMeasurement(measurement);
+			        measurements.add(measurement2);
+			}
+			
+			
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return measurements;
+		
+		
+		
+	}
+	
 }
+
