@@ -14,6 +14,7 @@ import sma.object.Item;
 import sma.object.Measurement;
 
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.SwingConstants;
 import java.awt.Font;
 import javax.swing.JTextField;
@@ -177,7 +178,7 @@ public class ItemManagement extends JFrame {
 
 		}
 	});
-		String[] columnNames = {"Item ID", "Item Name", "Category", "Measurement", "Quantity", "Unit Price"};
+		String[] columnNames = {"Item ID", "Item Name", "Category", "Measurement", "Remaining", "Unit Price"};
 		(model).setColumnIdentifiers(columnNames);	
 		
 		scrollPane.setViewportView(table);
@@ -193,12 +194,12 @@ public class ItemManagement extends JFrame {
 		btnAdd.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				
-				 String itemId = txtItemId.getText();
+				 int itemId = Integer.parseInt(txtItemId.getText());
 				 String itemName = txtItemName.getText();
 				 String category = cbCategory.getSelectedItem().toString();
 				 String measurement = cbMeasurement.getSelectedItem().toString();
-				 String quantity = txtQuantity.getText();
-				 String unitPrice = txtUnitPrice.getText();
+				 int quantity = Integer.parseInt(txtQuantity.getText());
+				 float unitPrice = Float.parseFloat(txtUnitPrice.getText());
 				 
 				 Item item = new Item();
 				 item.setItemId(itemId);
@@ -209,6 +210,9 @@ public class ItemManagement extends JFrame {
 				 item.setUnitPrice(unitPrice);
 				 
 				 String result = DBOperation.insertItem(item, conn);
+				 
+				 JOptionPane.setDefaultLocale(null);
+				 JOptionPane.showMessageDialog(btnAdd, "Add successfully!");
 				 
 				 searchData();
 			}
@@ -227,33 +231,88 @@ public class ItemManagement extends JFrame {
 		panel_2.add(btnSearch);
 		
 		JButton btnUpdate = new JButton("Update");
+		btnUpdate.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				
+				 int itemId = Integer.parseInt(txtItemId.getText());
+				 String itemName = txtItemName.getText();
+				 String category = cbCategory.getSelectedItem().toString();
+				 String measurement = cbMeasurement.getSelectedItem().toString();
+				 int quantity = Integer.parseInt(txtQuantity.getText());
+				 float unitPrice = Float.parseFloat(txtUnitPrice.getText());
+				 Item item = new Item();
+				 	if(itemId == 0 || itemName == null || itemName.isEmpty()
+				 			|| category == null || category.isEmpty() || measurement == null || measurement.isEmpty()
+				 			|| txtQuantity == null || txtQuantity.getText().isEmpty() || txtUnitPrice == null || txtUnitPrice.getText().isEmpty())
+					{
+						JOptionPane.showMessageDialog(null,"Please fill in all the required information.");
+						
+					}else {
+						 
+						 item.setItemId(itemId);
+						 item.setItemName(itemName);
+						 item.setCategory(category);
+						 item.setMeasurement(measurement);
+						 item.setQuantity(quantity);
+						 item.setUnitPrice(unitPrice);
+						JOptionPane.showMessageDialog(null, "Update a item successfully!");
+						 String result = DBOperation.updateItem(item, conn);
+					}
+
+				 searchData();
+			}
+		});
 		btnUpdate.setBounds(10, 81, 143, 42);
 		panel_2.add(btnUpdate);
 		
 		JButton btnDelete = new JButton("Delete");
 		btnDelete.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				
+				JOptionPane.showOptionDialog(null, "Confirm to delete?", "Confirm Delete", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE, null, null, btnDelete);
+				
+				int column = 0;
+				int row = table.getSelectedRow();
+				int selectedItemId = Integer.parseInt(table.getModel().getValueAt(row, column).toString());
+				String result = DBOperation.deleteItem(selectedItemId, conn);
+				
+				searchData();
+				
+				
 			}
 		});
 		btnDelete.setBounds(238, 81, 143, 42);
 		panel_2.add(btnDelete);
 		
 		JButton btnResetTable = new JButton("Reset Table");
+		btnResetTable.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				
+				txtItemId.setText("");
+				txtItemName.setText("");
+				
+				searchData();
+			}
+		});
 		btnResetTable.setBounds(469, 10, 143, 42);
 		panel_2.add(btnResetTable);
 		
 		JButton btnCancel = new JButton("Cancel");
+		btnCancel.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				
+				dispose();
+			}
+		});
 		btnCancel.setBounds(729, 124, 116, 28);
 		panel_2.add(btnCancel);
 	}
 	
 	public static void setSelectedValue(JComboBox comboBox, String value)
     {
-        Item item;
-        for (int i = 0; i < comboBox.getItemCount(); i++)
+		for (int i = 0; i < comboBox.getItemCount(); i++)
         {
-            item = (Item)comboBox.getItemAt(i);
-            if (item.getCategory().equalsIgnoreCase(value))
+            if (comboBox.getItemAt(i).equals(value))
             {
                 comboBox.setSelectedIndex(i);
                 break;
@@ -265,10 +324,10 @@ public class ItemManagement extends JFrame {
 
 		Map <String, String> conditionMap = new HashMap <String, String>();
 
-		 String itemId = txtItemId.getText();
+
 		 String itemName = txtItemName.getText();
-		if(itemId != null && !itemId.isEmpty()) {
-			conditionMap.put(DBOperation.itemId, itemId);
+		if(txtItemId.getText() != null && !txtItemId.getText().isEmpty()) {
+			conditionMap.put(DBOperation.itemId, txtItemId.getText());
 		}
 		if(itemName != null && !itemName.isEmpty()) {
 			conditionMap.put(DBOperation.itemName, itemName);

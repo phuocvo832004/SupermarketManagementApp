@@ -29,6 +29,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.awt.event.ActionEvent;
+import java.awt.FlowLayout;
 
 public class CustomerManagement extends JFrame {
 
@@ -64,7 +65,7 @@ public class CustomerManagement extends JFrame {
 	public CustomerManagement() {
 		setTitle("CUSTOMER MANAGEMENT");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 1129, 715);
+		setBounds(100, 100, 1129, 627);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 
@@ -100,6 +101,7 @@ public class CustomerManagement extends JFrame {
 		panel_1.add(lblNewLabel_2);
 		
 		txtCustomerId = new JTextField();
+		txtCustomerId.setEditable(false);
 		txtCustomerId.setBounds(146, 42, 209, 38);
 		panel_1.add(txtCustomerId);
 		txtCustomerId.setColumns(10);
@@ -165,49 +167,25 @@ public class CustomerManagement extends JFrame {
 
 		
 		JPanel panel_2 = new JPanel();
-		panel_2.setBounds(10, 542, 1095, 126);
+		panel_2.setBounds(10, 542, 1095, 39);
 		contentPane.add(panel_2);
-		panel_2.setLayout(null);
 		
-		JButton btnNewButton = new JButton("Add");
+		JButton btnNewButton = new JButton("Add Customer ");
 		btnNewButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				
-				 String customerId = txtCustomerId.getText();
-				 String customerName = txtCustomerName.getText();
-				 String phoneNumbers = txtPhonenumbers.getText();
-				 String address = txtAddress.getText();
-				 
-				 Customer customer = new Customer();
-				 customer.setCustomerId(customerId);
-				 customer.setCustomerName(customerName);
-				 customer.setPhoneNumbers(phoneNumbers);
-				 customer.setAddress(address);
-				 
-				 String result = DBOperation.insertCustomer(customer, conn);
-				 
-					if(customerId == null || customerName == null || phoneNumbers == null || address == null)
-					{
-						JOptionPane.showMessageDialog(null,"Please fill in all the required information.");
-					}else {
-						JOptionPane.showMessageDialog(null, "Insert a customer successfully!");
-					}
-				
-				searchData();	
-				
-					
-				
-				
+				AddCustomerDialog addCustomerDialog = new AddCustomerDialog();
+				addCustomerDialog.show();
 			}
 		});
-		btnNewButton.setBounds(10, 10, 143, 42);
+		panel_2.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
 		panel_2.add(btnNewButton);
 		
 		JButton btnUpdate = new JButton("Update");
 		btnUpdate.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				
-				 String customerId = txtCustomerId.getText();
+				 int customerId = Integer.parseInt(txtCustomerId.getText());
 				 String customerName = txtCustomerName.getText();
 				 String phoneNumbers = txtPhonenumbers.getText();
 				 String address = txtAddress.getText();
@@ -220,12 +198,12 @@ public class CustomerManagement extends JFrame {
 				 
 				 String result = DBOperation.updateCustomer(customer, conn);
 				 
-//					if(customerId == null || customerName == null || phoneNumbers == null || address == null)
-//					{
-//						JOptionPane.showMessageDialog(null,"Please fill in all the required information.");
-//					}else {
-//						JOptionPane.showMessageDialog(null, "Update a customer successfully!");
-//					}
+					if(customerId == 0 || customerName == null || phoneNumbers == null || address == null)
+					{
+						JOptionPane.showMessageDialog(null,"Please fill in all the required information.");
+					}else {
+						JOptionPane.showMessageDialog(null, "Update a customer successfully!");
+					}
 				
 				searchData();	
 				
@@ -233,7 +211,6 @@ public class CustomerManagement extends JFrame {
 				
 			}
 		});
-		btnUpdate.setBounds(238, 10, 143, 42);
 		panel_2.add(btnUpdate);
 		
 		JButton btnSearch = new JButton("Search");
@@ -243,7 +220,6 @@ public class CustomerManagement extends JFrame {
 				searchData();
 			}
 		});
-		btnSearch.setBounds(481, 10, 143, 42);
 		panel_2.add(btnSearch);
 		
 		JButton btnDelete = new JButton("Delete");
@@ -254,26 +230,18 @@ public class CustomerManagement extends JFrame {
 
 				int row = table.getSelectedRow();
 				Customer customer = new Customer();
-				customer.setCustomerId(table.getValueAt(row, 0).toString());
-				
+				customer.setCustomerId(Integer.parseInt(table.getValueAt(row, 0).toString()));
 				String result = DBOperation.deleteCustomer(customer.getCustomerId(), conn);
 				
+				txtCustomerId.setText("");
+				txtCustomerName.setText("");
+				txtPhonenumbers.setText("");
+				txtAddress.setText("");
 				searchData();
 				
 			}
 		});
-		btnDelete.setBounds(725, 10, 143, 42);
 		panel_2.add(btnDelete);
-		
-		JButton btnCancel = new JButton("Cancel");
-		btnCancel.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				
-				dispose();
-			}
-		});
-		btnCancel.setBounds(959, 84, 126, 32);
-		panel_2.add(btnCancel);
 		
 		JButton btnResetTable = new JButton("Reset Table");
 		btnResetTable.addActionListener(new ActionListener() {
@@ -286,18 +254,43 @@ public class CustomerManagement extends JFrame {
 				searchData();
 			}
 		});
-		btnResetTable.setBounds(942, 10, 143, 42);
 		panel_2.add(btnResetTable);
+		
+		JButton btnItemList = new JButton("Invoice");
+		btnItemList.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+
+				int row = table.getSelectedRow();
+				String customerId = table.getValueAt(row, 0).toString();
+				Customer customer = DBOperation.queryCustomer(customerId, conn);
+				
+				CustomerInvoice customerInvoice = new CustomerInvoice(customer);
+				customerInvoice.show();
+			}
+		});
+		panel_2.add(btnItemList);
+		
+		JButton btnExportInvoice = new JButton("Export Invoice");
+		panel_2.add(btnExportInvoice);
+		
+		JButton btnCancel = new JButton("Cancel");
+		btnCancel.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				
+				dispose();
+			}
+		});
+		panel_2.add(btnCancel);
 	}
 	
 	public void searchData() {
 
 		Map <String, String> conditionMap = new HashMap <String, String>();
 
-		 String customerId = txtCustomerId.getText();
+
 		 String customerName = txtCustomerName.getText();
-		if(customerId != null && !customerId.isEmpty()) {
-			conditionMap.put(DBOperation.customerId, customerId);
+		if(txtCustomerId.getText() != null && !txtCustomerId.getText().isEmpty()) {
+			conditionMap.put(DBOperation.customerId, txtCustomerId.getText());
 		}
 		if(customerName != null && !customerName.isEmpty()) {
 			conditionMap.put(DBOperation.customerName, customerName);

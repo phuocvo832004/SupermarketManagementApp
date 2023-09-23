@@ -5,9 +5,15 @@ import java.awt.EventQueue;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
+
+import sma.db.DBOperation;
+
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
+import java.sql.Connection;
 import java.awt.event.ActionEvent;
+import javax.swing.JLabel;
+import javax.swing.JTextField;
 
 public class SupermarketManagement extends JFrame {
 
@@ -35,7 +41,7 @@ public class SupermarketManagement extends JFrame {
 	public SupermarketManagement() {
 		setTitle("Supermarket Management");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 891, 303);
+		setBounds(100, 100, 891, 199);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 
@@ -59,6 +65,13 @@ public class SupermarketManagement extends JFrame {
 		panel.add(btnNewButton);
 		
 		JButton btnInvoiceManagement = new JButton("Invoice Management");
+		btnInvoiceManagement.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				
+				InvoiceManagement invoicemanagement = new InvoiceManagement();
+				invoicemanagement.show();
+			}
+		});
 		btnInvoiceManagement.setBounds(290, 27, 213, 40);
 		panel.add(btnInvoiceManagement);
 		
@@ -72,5 +85,16 @@ public class SupermarketManagement extends JFrame {
 		});
 		btnItemManagement.setBounds(551, 27, 213, 40);
 		panel.add(btnItemManagement);
+		
+		JButton btnNewButton_1 = new JButton("Put Selected Item ");
+		btnNewButton_1.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				
+				//PutSelectedItem putSelectedItem = new PutSelectedItem();
+				
+			}
+		});
+		btnNewButton_1.setBounds(34, 80, 213, 28);
+		panel.add(btnNewButton_1);
 	}
 }

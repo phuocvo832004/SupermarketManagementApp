@@ -1,16 +1,18 @@
 package sma.object;
 
+import java.util.List;
+
 public class Customer {
 	
-	private String customerId;
+	private int customerId;
 	private String customerName;
 	private String phoneNumbers;
 	private String address;
 	
-	public String getCustomerId() {
+	public int getCustomerId() {
 		return customerId;
 	}
-	public void setCustomerId(String customerId) {
+	public void setCustomerId(int customerId) {
 		this.customerId = customerId;
 	}
 	public String getCustomerName() {
@@ -31,6 +33,4 @@ public class Customer {
 	public void setAddress(String address) {
 		this.address = address;
 	}
-
-	
 }

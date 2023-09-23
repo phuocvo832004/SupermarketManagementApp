@@ -2,19 +2,19 @@ package sma.object;
 
 public class Item {
 
-	private String itemId;
+	private int itemId;
 	private String itemName;
 	private String category;
 	private String measurement;
-	private String quantity;
+	private int quantity;
 	private String total;
-	private String unitPrice;
-	private String price;
+	private float unitPrice;
+	private float price;
 	
-	public String getItemId() {
+	public int getItemId() {
 		return itemId;
 	}
-	public void setItemId(String itemId) {
+	public void setItemId(int itemId) {
 		this.itemId = itemId;
 	}
 	public String getItemName() {
@@ -35,11 +35,11 @@ public class Item {
 	public void setMeasurement(String measurement) {
 		this.measurement = measurement;
 	}
-	public String getQuantity() {
+	public int getQuantity() {
 		return quantity;
 	}
-	public void setQuantity(String quantity) {
-		this.quantity = quantity;
+	public void setQuantity(int quantity2) {
+		this.quantity = quantity2;
 	}
 	public String getTotal() {
 		return total;
@@ -47,18 +47,19 @@ public class Item {
 	public void setTotal(String total) {
 		this.total = total;
 	}
-	public String getUnitPrice() {
+	public float getUnitPrice() {
 		return unitPrice;
 	}
-	public void setUnitPrice(String unitPrice) {
-		this.unitPrice = unitPrice;
+	public void setUnitPrice(float unitPrice2) {
+		this.unitPrice = unitPrice2;
 	}
-	public String getPrice() {
-		return price;
+	public float getPrice() {
+		return quantity * unitPrice;
 	}
-	public void setPrice(String price) {
+	public void setPrice(float price) {
 		this.price = price;
 	}
+
 
 	
 	

@@ -2,16 +2,16 @@ package sma.object;
 
 public class Invoice {
 	
-	private String invoiceId;
+	private int invoiceId;
 	private String tradingTime;
-	private String boothId;
+	private int boothId;
 	private String boothName;
 	private float total;
 	
-	public String getInvoiceId() {
+	public int getInvoiceId() {
 		return invoiceId;
 	}
-	public void setInvoiceId(String invoiceId) {
+	public void setInvoiceId(int invoiceId) {
 		this.invoiceId = invoiceId;
 	}
 	public String getTradingTime() {
@@ -20,10 +20,10 @@ public class Invoice {
 	public void setTradingTime(String tradingTime) {
 		this.tradingTime = tradingTime;
 	}
-	public String getBoothId() {
+	public int getBoothId() {
 		return boothId;
 	}
-	public void setBoothId(String boothId) {
+	public void setBoothId(int boothId) {
 		this.boothId = boothId;
 	}
 	public String getBoothName() {
