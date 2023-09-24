@@ -261,17 +261,26 @@ public class CustomerManagement extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 
 				int row = table.getSelectedRow();
-				String customerId = table.getValueAt(row, 0).toString();
+				int customerId =Integer.parseInt(table.getValueAt(row, 0).toString());
 				Customer customer = DBOperation.queryCustomer(customerId, conn);
 				
 				CustomerInvoice customerInvoice = new CustomerInvoice(customer);
 				customerInvoice.show();
 			}
 		});
-		panel_2.add(btnItemList);
 		
-		JButton btnExportInvoice = new JButton("Export Invoice");
-		panel_2.add(btnExportInvoice);
+		JButton btnAddInvoice = new JButton("Add Invoice");
+		btnAddInvoice.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				
+				PutSelectedItem putSelectedItem = new PutSelectedItem();
+				putSelectedItem.show();
+				
+				
+			}
+		});
+		panel_2.add(btnAddInvoice);
+		panel_2.add(btnItemList);
 		
 		JButton btnCancel = new JButton("Cancel");
 		btnCancel.addActionListener(new ActionListener() {

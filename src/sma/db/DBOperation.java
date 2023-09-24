@@ -132,7 +132,7 @@ public class DBOperation {
 
 	}
 
-	public static Customer queryCustomer(String customerId, Connection conn) {
+	public static Customer queryCustomer(int customerId, Connection conn) {
 
 		String sql = "SELECT * FROM CUSTOMERS WHERE CUSTOMER_ID = '" + customerId + "'" ;
 
@@ -819,6 +819,37 @@ public class DBOperation {
 		}
 	
 		return "Failed";
+	}
+	
+	public static Customer queryCustomerByPhone(String phoneNumbers, Connection conn) {
+		
+		String sql = "SELECT * FROM CUSTOMERS WHERE PHONENUMBERS = '" + phoneNumbers + "'";
+		
+		Customer customer = new Customer();
+		try {
+			PreparedStatement statement = conn.prepareStatement(sql);
+			ResultSet result = statement.executeQuery(sql);
+			
+			while(result.next()) {
+				
+				int customerId1 = result.getInt("CUSTOMER_ID");
+				String customerName = result.getString("CUSTOMER_NAME");
+				String phonenumbers = result.getString("PHONENUMBERS");
+				String address = result.getString("ADDRESS");
+
+				customer.setCustomerId(customerId1);
+				customer.setCustomerName(customerName);
+				customer.setPhoneNumbers(phonenumbers);
+				customer.setAddress(address);
+			}
+
+		}catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+		
+		return customer;
+		
 	}
 
 	public static String insertCustomerInvoice(int customerId, int invoiceId, int boothId,

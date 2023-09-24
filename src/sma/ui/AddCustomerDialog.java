@@ -141,11 +141,7 @@ public class AddCustomerDialog extends JFrame {
 						JOptionPane.showMessageDialog(null,"Please fill in all the required information.");
 					}else {
 						JOptionPane.showMessageDialog(null, "Insert a customer successfully!");
-					}
-				
-				PutSelectedItem putSelectedItem = new PutSelectedItem(customer);
-				putSelectedItem.show();
-					
+					}	
 				
 			}
 		});

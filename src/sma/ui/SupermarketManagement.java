@@ -85,16 +85,5 @@ public class SupermarketManagement extends JFrame {
 		});
 		btnItemManagement.setBounds(551, 27, 213, 40);
 		panel.add(btnItemManagement);
-		
-		JButton btnNewButton_1 = new JButton("Put Selected Item ");
-		btnNewButton_1.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				
-				//PutSelectedItem putSelectedItem = new PutSelectedItem();
-				
-			}
-		});
-		btnNewButton_1.setBounds(34, 80, 213, 28);
-		panel.add(btnNewButton_1);
 	}
 }
