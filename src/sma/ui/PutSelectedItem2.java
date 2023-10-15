@@ -43,7 +43,7 @@ import javax.swing.LayoutStyle.ComponentPlacement;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 
-public class PutSelectedItem extends JFrame {
+public class PutSelectedItem2 extends JFrame {
 
 	private JPanel contentPane;
 	private JTextField txtCustomerId;
@@ -80,7 +80,7 @@ public class PutSelectedItem extends JFrame {
 	/**
 	 * Create the frame.
 	 */
-	public PutSelectedItem() {
+	public PutSelectedItem2(int customerId, String customerName, String phonenumber) {
 		setTitle("Put item to cart");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 961, 715);
@@ -109,7 +109,7 @@ public class PutSelectedItem extends JFrame {
 		txtCustomerId.setColumns(10);
 		txtCustomerId.setBounds(106, 32, 100, 20);
 		panel.add(txtCustomerId);
-		txtCustomerId.setText(null);
+		txtCustomerId.setText(String.valueOf(customerId));
 
 		JLabel lblNewLabel_1_1 = new JLabel("Customer Name:");
 		lblNewLabel_1_1.setBounds(282, 33, 100, 14);
@@ -121,32 +121,14 @@ public class PutSelectedItem extends JFrame {
 		txtCustomerName.setColumns(10);
 		txtCustomerName.setBounds(392, 30, 100, 20);
 		panel.add(txtCustomerName);
-		txtCustomerName.setText(null);
+		txtCustomerName.setText(customerName);
 		
 		JLabel lblNewLabel_4 = new JLabel("Phone numbers:");
 		lblNewLabel_4.setBounds(10, 72, 105, 20);
 		panel.add(lblNewLabel_4);
 		
 		txtPhonenumbers = new JTextField();
-		txtPhonenumbers.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				
-				if(DBOperation.existsPhone(txtPhonenumbers.getText(), conn)) {
-					
-					String phonenumbers = txtPhonenumbers.getText();
-					
-					Customer customer = DBOperation.queryCustomerByPhone(phonenumbers, conn);
-					
-					txtCustomerId.setText(String.valueOf(customer.getCustomerId()));
-					txtCustomerName.setText(String.valueOf(customer.getCustomerName()));
-				}else {
-					
-					JOptionPane.showMessageDialog(null, "Khong tim thay so dien thoai nay!");
-				}
-				
-			}
-		});
-		txtPhonenumbers.setText((String) null);
+		txtPhonenumbers.setText(phonenumber);
 		txtPhonenumbers.setColumns(10);
 		txtPhonenumbers.setBounds(106, 72, 100, 20);
 		panel.add(txtPhonenumbers);
@@ -199,7 +181,6 @@ public class PutSelectedItem extends JFrame {
 		panel_1.add(scrollPane_1);
 		
 		table2 = new JTable();
-
 		String[] columnNames1 = {"Item ID", "Item Name", "Quantity", "Unit Price", "Price"};
 		(model2).setColumnIdentifiers(columnNames1);
 
@@ -433,6 +414,8 @@ public class PutSelectedItem extends JFrame {
 				int boothId = booth.getBoothId();
 				float total = Float.parseFloat(txtTotal.getText().toString());
 				if(!checkBoxMember.isSelected()) {
+
+					
 					
 				}else {
 					

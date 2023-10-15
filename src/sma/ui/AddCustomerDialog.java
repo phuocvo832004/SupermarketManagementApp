@@ -128,27 +128,37 @@ public class AddCustomerDialog extends JFrame {
 				 String phoneNumbers = txtPhonenumbers.getText();
 				 String address = txtAddress.getText();
 				 
-				 Customer customer = new Customer();
-				 customer.setCustomerId(customerId);
-				 customer.setCustomerName(customerName);
-				 customer.setPhoneNumbers(phoneNumbers);
-				 customer.setAddress(address);
-				 
-				 String result = DBOperation.insertCustomer(customer, conn);
-				 
-					if(customerId == 0 || customerName == null || phoneNumbers == null || address == null)
-					{
-						JOptionPane.showMessageDialog(null,"Please fill in all the required information.");
-					}else {
-						JOptionPane.showMessageDialog(null, "Insert a customer successfully!");
-					}	
-				
+				 if(DBOperation.checkExistPhonenumbers(phoneNumbers, conn)) {
+					 Customer customer = new Customer();
+					 customer.setCustomerId(customerId);
+					 customer.setCustomerName(customerName);
+					 customer.setPhoneNumbers(phoneNumbers);
+					 customer.setAddress(address);
+					 
+					 String result = DBOperation.insertCustomer(customer, conn);
+					 
+						if(customerId == 0 || customerName == null || phoneNumbers == null || address == null)
+						{
+							JOptionPane.showMessageDialog(null,"Please fill in all the required information.");
+						}else {
+							JOptionPane.showMessageDialog(null, "Insert a customer successfully!");
+						}	
+					dispose();
+				 }else {
+					 
+					 JOptionPane.showMessageDialog(null, "Phonenumbers existed!");
+				 }
 			}
 		});
 		btnApply.setBounds(469, 26, 99, 23);
 		panel_1.add(btnApply);
 		
 		JButton btnCancel = new JButton("Cancel");
+		btnCancel.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				dispose();
+			}
+		});
 		btnCancel.setBounds(578, 26, 99, 23);
 		panel_1.add(btnCancel);
 	}

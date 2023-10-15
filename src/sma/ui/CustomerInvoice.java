@@ -22,6 +22,9 @@ import java.sql.Connection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javax.swing.JButton;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 
 public class CustomerInvoice extends JFrame {
 
@@ -131,6 +134,16 @@ public class CustomerInvoice extends JFrame {
 		String[] columnNames1 = {"ITEM_ID", "ITEM_NAME", "QUANTITY", "UNIT_PRICE"};
 		(model2).setColumnIdentifiers(columnNames1);
 		scrollPane_1.setViewportView(table2);
+		
+		JButton btnNewButton = new JButton("Cancel");
+		btnNewButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				
+				dispose();
+			}
+		});
+		btnNewButton.setBounds(778, 584, 89, 23);
+		contentPane.add(btnNewButton);
 	}
 	
 	
@@ -184,5 +197,4 @@ public class CustomerInvoice extends JFrame {
 		this.repaint();
 
 	}
-	
 }

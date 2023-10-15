@@ -68,8 +68,8 @@ public class SupermarketManagement extends JFrame {
 		btnInvoiceManagement.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				
-				InvoiceManagement invoicemanagement = new InvoiceManagement();
-				invoicemanagement.show();
+				PutSelectedItem putSelectedItem = new PutSelectedItem();
+				putSelectedItem.show();
 			}
 		});
 		btnInvoiceManagement.setBounds(290, 27, 213, 40);

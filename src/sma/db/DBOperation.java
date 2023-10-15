@@ -12,6 +12,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import sma.object.Booth;
 import sma.object.Category;
 import sma.object.Customer;
 import sma.object.Invoice;
@@ -109,28 +110,26 @@ public class DBOperation {
 		}
 		return "Failed";
 	}
+	
+	public static boolean checkExistPhonenumbers(String phoneNumber, Connection conn) {
 
-	public static String deleteCustomer(int i, Connection conn) {
+	    String sql = "SELECT PHONENUMBERS FROM CUSTOMERS WHERE PHONENUMBERS = ?";
 
-		String sql = "DELETE FROM CUSTOMERS WHERE cUSTOMER_ID=?";
-
-		try {
-
-			PreparedStatement statement = conn.prepareStatement(sql);
-			statement.setInt(1, i);
-
-			int rowsInserted = statement.executeUpdate();
-			if (rowsInserted > 0) {
-				System.out.println("A new user was deleted successfully!");
-				return "Delete successfully";
-			}
-
-		}catch (SQLException ex) {
-			ex.printStackTrace();
-		}
-		return "Failed";
-
+	    try {
+	        PreparedStatement statement = conn.prepareStatement(sql);
+	        statement.setString(1, phoneNumber);
+	        ResultSet result = statement.executeQuery();
+	        while(result.next()) {
+	        	
+	        	return true;
+	        }
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	        
+	    }
+	    return false;
 	}
+
 
 	public static Customer queryCustomer(int customerId, Connection conn) {
 
@@ -157,7 +156,7 @@ public class DBOperation {
 
 			}
 		} catch (SQLException e) {
-			
+
 			e.printStackTrace();
 		}
 		return customer;
@@ -261,18 +260,18 @@ public class DBOperation {
 		}
 		return "Failed";
 	}
-	
+
 	public static List<Item> searchSelectedItem(int invoiceId, Connection conn){
-		
+
 		String sql = "SELECT * FROM INVOICE_DETAIL WHERE INVOICE_ID= '" + invoiceId + "'";
-		
+
 		List<Item> items = new ArrayList<>();
-		
+
 		try {
 			PreparedStatement statement = conn.prepareStatement(sql);
 			ResultSet result = statement.executeQuery(sql);
 			while(result.next()) {
-				
+
 				int itemId = result.getInt("ITEM_ID");
 				String itemName = result.getString("ITEM_NAME");
 				int quantity = result.getInt("QUANTITY");
@@ -286,11 +285,11 @@ public class DBOperation {
 
 				items.add(item);
 			}
-			
+
 		}catch (SQLException ex) {
 			ex.printStackTrace();
 		}
-		
+
 		return items;
 	}
 
@@ -354,7 +353,7 @@ public class DBOperation {
 			ResultSet result = statement.executeQuery(sql);
 			while (result.next()){
 
-				
+
 				String itemName = result.getString("ITEM_NAME");
 				String category = result.getString("CATEGORY");
 				String measurement = result.getString("MEASUREMENT");
@@ -370,7 +369,7 @@ public class DBOperation {
 
 			}
 		} catch (SQLException e) {
-			
+
 			e.printStackTrace();
 		}
 
@@ -471,6 +470,127 @@ public class DBOperation {
 
 	}
 
+
+	public static List<Item> querySelectedItem(Connection conn) {
+
+		String sql = " SELECT invoice_detail.item_id,"
+				+ "invoice_detail.item_name, items.category, items.measurement,"
+				+ "invoice_detail.quantity, invoice_detail.unit_price "
+				+ " FROM invoice_detail LEFT JOIN items ON invoice_detail.item_id = items.item_id WHERE INVOICE_DETAIL.INVOICE_ID = (SELECT MAX(INVOICE_ID) FROM INVOICE_DETAIL)";
+
+		List<Item> items = new ArrayList<Item>();
+
+		try {
+
+			Statement statement = conn.createStatement();
+			ResultSet result = statement.executeQuery(sql);
+
+			while (result.next()) {
+				int itemId = result.getInt("item_id");
+				String itemName = result.getString("item_name");
+				String category = result.getString("category");
+				String measurement = result.getString("measurement");
+				int selectedQuantity = result.getInt("quantity");
+				int unitPrice = result.getInt("unit_price");
+
+				Item item = new Item();
+				item.setItemId(itemId);
+				item.setItemName(itemName);
+				item.setMeasurement(measurement);
+				item.setCategory(category);
+				item.setQuantity(selectedQuantity);
+				item.setUnitPrice(unitPrice);
+				items.add(item);
+
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+		return items;
+
+	}
+
+	public static Booth queryBoothInfo(String boothName, Connection conn) {
+
+		String sql = "SELECT * FROM BOOTH_INFO WHERE BOOTH_NAME ='" + boothName + "'";
+
+		Booth booth = new Booth();
+		try {
+			Statement statement = conn.createStatement();
+			ResultSet result = statement.executeQuery(sql);
+
+			while (result.next()){
+				
+				booth.setBoothId(result.getInt("booth_ID"));
+				booth.setBoothName(result.getString("booth_NAME"));
+
+			}
+		}catch (SQLException e) {
+			// TODO: handle exception
+		}
+
+		return booth;
+	}
+	
+	public static Booth queryBoothInfo(int boothId, Connection conn) {
+
+		String sql = "SELECT * FROM BOOTH_INFO WHERE BOOTH_ID ='" + boothId + "'";
+
+		Booth booth = new Booth();
+		try {
+			Statement statement = conn.createStatement();
+			ResultSet result = statement.executeQuery(sql);
+
+			while (result.next()){
+				
+				booth.setBoothId(result.getInt("booth_ID"));
+				booth.setBoothName(result.getString("booth_NAME"));
+
+			}
+		}catch (SQLException e) {
+			// TODO: handle exception
+		}
+
+		return booth;
+	}
+
+	public static List <Booth> queryBoothInfo (Connection conn){
+
+		String sql = " SELECT B.BOOTH_ID, B.BOOTH_NAME FROM BOOTH_INFO B "
+				+ "left JOIN CUSTOMER_INVOICE C "
+				+ "on B.BOOTH_ID = C.BOOTH_ID "
+				+ "group by B.BOOTH_ID order by B.BOOTH_NAME ASC ";
+
+		List<Booth> booths = new ArrayList<Booth>();
+
+		try {
+
+			Statement statement = conn.createStatement();
+			ResultSet result = statement.executeQuery(sql);
+
+			while (result.next()){
+
+
+				Booth booth = new Booth();
+
+				booth.setBoothId(result.getInt("booth_ID"));
+				booth.setBoothName(result.getString("booth_NAME"));
+				booths.add(booth);
+
+			}
+
+			statement.close();
+
+		}catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		return booths;
+
+	}
+
 	public static List<Category> queryCategories (Connection conn){
 
 		String sql = "SELECT * FROM CATEGORIES";
@@ -491,7 +611,7 @@ public class DBOperation {
 
 
 		} catch (SQLException e) {
-			
+
 			e.printStackTrace();
 		}
 		return categories;
@@ -518,7 +638,7 @@ public class DBOperation {
 
 
 		} catch (SQLException e) {
-		
+
 			e.printStackTrace();
 		}
 		return measurements;
@@ -554,7 +674,7 @@ public class DBOperation {
 
 			}
 		}catch (SQLException e) {
-			
+
 			e.printStackTrace();
 		}
 
@@ -630,7 +750,7 @@ public class DBOperation {
 			}
 
 		}catch (SQLException e) {
-			
+
 			e.printStackTrace();
 		}		
 		return invoices;
@@ -747,7 +867,7 @@ public class DBOperation {
 
 			}
 		}catch (SQLException e) {
-			
+
 			e.printStackTrace();
 		}
 
@@ -772,7 +892,7 @@ public class DBOperation {
 		System.out.println("Max invoice id = " + max );
 		return max;
 	}
-	
+
 	public static int getMaxCustomerId(Connection conn) {
 		String sql = "SELECT MAX(CUSToMER_ID) AS MAX FROM CUSTOMERS ";
 		int max = 0;
@@ -791,47 +911,60 @@ public class DBOperation {
 		System.out.println("Max customer id = " + max );
 		return max;
 	}
-
-	public static String insertInvoiceDetail(int invoiceId, Item item, Connection conn) {
-		String sql = "INSERT INTO INVOICE_DETAIL (INVOICE_ID, ITEM_ID, ITEM_NAME, QUANTITY, UNIT_PRICE, UPDATED_DATE) VALUES (?, ?, ?, ?, ?, ?)";
-		SimpleDateFormat formatter = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
-		Date date = new Date();
-		String currentTime = formatter.format(date);
+	
+	public static int getMaxItemId(Connection conn) {
+		
+		String sql = "SELECT MAX(ITEM_ID) AS MAX FROM ITEMS ";
+		int max =0;
 		try {
-	
 			PreparedStatement statement = conn.prepareStatement(sql);
-			statement.setInt(1, invoiceId);
-			statement.setInt(2, item.getItemId());
-			statement.setString(3, item.getItemName());
-			statement.setInt(4, item.getQuantity());
-			statement.setFloat(5, item.getUnitPrice());
-			statement.setString(6, currentTime);
+			ResultSet result = statement.executeQuery(sql);
 
-	
-			int rowsInserted = statement.executeUpdate();
-			if (rowsInserted > 0) {
-				System.out.println("A new invoice_detail was inserted successfully!");
-				return "A new Invoice Detail was inserted successfully!";
+			if (result.next()){
+				max = result.getInt("MAX");
 			}
-	
-		}catch (SQLException ex) {
-			ex.printStackTrace();
+
+		}catch (SQLException e) {
+			e.printStackTrace();
 		}
-	
-		return "Failed";
+		System.out.println("Max item id = " + max );
+		return max;
+		
 	}
-	
+
+	public static boolean existsPhone(String phoneNumbers, Connection conn) {
+	    String sql = "SELECT PHONENUMBERS FROM CUSTOMERS WHERE PHONENUMBERS = ?";
+	    try {
+	        
+	        PreparedStatement preparedStatement = conn.prepareStatement(sql);
+	        preparedStatement.setString(1, phoneNumbers);
+	        ResultSet resultSet = preparedStatement.executeQuery();
+
+	        
+	        if (resultSet.next()) {
+	            
+	            return true;
+	        } else {
+	           
+	            return false;
+	        }
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	        return false; 
+	    }
+	}
+
 	public static Customer queryCustomerByPhone(String phoneNumbers, Connection conn) {
-		
+
 		String sql = "SELECT * FROM CUSTOMERS WHERE PHONENUMBERS = '" + phoneNumbers + "'";
-		
+
 		Customer customer = new Customer();
 		try {
 			PreparedStatement statement = conn.prepareStatement(sql);
 			ResultSet result = statement.executeQuery(sql);
-			
+
 			while(result.next()) {
-				
+
 				int customerId1 = result.getInt("CUSTOMER_ID");
 				String customerName = result.getString("CUSTOMER_NAME");
 				String phonenumbers = result.getString("PHONENUMBERS");
@@ -846,15 +979,15 @@ public class DBOperation {
 		}catch (SQLException e) {
 			e.printStackTrace();
 		}
-		
-		
+
+
 		return customer;
-		
+
 	}
 
 	public static String insertCustomerInvoice(int customerId, int invoiceId, int boothId,
 			float total, Connection conn) {
-	
+
 		String sql = "INSERT INTO CUSTOMER_INVOICE (CUSTOMER_ID, INVOICE_ID, TRADING_TIME, BOOTH_ID, TOTAL, UPDATED_DATE) VALUES (?, ?, ?, ?, ?, ?)";
 		SimpleDateFormat formatter = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 		Date date = new Date();
@@ -877,8 +1010,38 @@ public class DBOperation {
 		}catch (SQLException e) {
 			e.printStackTrace();
 		}
-		
+
 		return "Failed";
 	}
+	
+	public static String insertInvoiceDetail(int invoiceId, Item item, Connection conn) {
+		String sql = "INSERT INTO INVOICE_DETAIL (INVOICE_ID, ITEM_ID, ITEM_NAME, QUANTITY, UNIT_PRICE, UPDATED_DATE) VALUES (?, ?, ?, ?, ?, ?)";
+		SimpleDateFormat formatter = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+		Date date = new Date();
+		String currentTime = formatter.format(date);
+		try {
+	
+			PreparedStatement statement = conn.prepareStatement(sql);
+			statement.setInt(1, invoiceId);
+			statement.setInt(2, item.getItemId());
+			statement.setString(3, item.getItemName());
+			statement.setInt(4, item.getQuantity());
+			statement.setFloat(5, item.getUnitPrice());
+			statement.setString(6, currentTime);
+	
+	
+			int rowsInserted = statement.executeUpdate();
+			if (rowsInserted > 0) {
+				System.out.println("A new invoice_detail was inserted successfully!");
+				return "A new Invoice Detail was inserted successfully!";
+			}
+	
+		}catch (SQLException ex) {
+			ex.printStackTrace();
+		}
+	
+		return "Failed";
+	}
+
 }
 

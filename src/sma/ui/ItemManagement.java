@@ -96,6 +96,8 @@ public class ItemManagement extends JFrame {
 		panel_1.add(lblNewLabel_2);
 		
 		txtItemId = new JTextField();
+		txtItemId.setEnabled(false);
+		txtItemId.setEditable(false);
 		txtItemId.setBounds(108, 40, 127, 22);
 		panel_1.add(txtItemId);
 		txtItemId.setColumns(10);
@@ -194,7 +196,7 @@ public class ItemManagement extends JFrame {
 		btnAdd.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				
-				 int itemId = Integer.parseInt(txtItemId.getText());
+				 int itemId = DBOperation.getMaxItemId(conn) + 1;
 				 String itemName = txtItemName.getText();
 				 String category = cbCategory.getSelectedItem().toString();
 				 String measurement = cbMeasurement.getSelectedItem().toString();
@@ -290,7 +292,10 @@ public class ItemManagement extends JFrame {
 				
 				txtItemId.setText("");
 				txtItemName.setText("");
-				
+				txtQuantity.setText("");
+				txtUnitPrice.setText("");
+				cbCategory.setSelectedItem(null);
+				cbMeasurement.setSelectedItem(null);
 				searchData();
 			}
 		});

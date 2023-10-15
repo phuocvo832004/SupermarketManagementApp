@@ -31,13 +31,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class InvoiceManagement extends JFrame {
+public class InvoiceManagement2 extends JFrame {
 
 	private JPanel contentPane;
-	private JTextField txtCustomerId;
-	private JTextField txtCustomerName;
-	private JTextField txtAddress;
-	private JTextField txtPhonenumbers;
 	private JTextField txtBoothId;
 	private JTextField txtBoothName;
 	private JTable table;
@@ -67,11 +63,11 @@ public class InvoiceManagement extends JFrame {
 	/**
 	 * Create the frame.
 	 */
-	public InvoiceManagement(int customerId , int invoiceId, int boothId, String tradingTime ) {
+	public InvoiceManagement2(int customerId , int invoiceId, int boothId, String tradingTime ) {
 		setForeground(new Color(128, 128, 255));
 		setBackground(new Color(0, 0, 0));
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 756, 583);
+		setBounds(100, 100, 756, 462);
 		contentPane = new JPanel();
 		contentPane.setBackground(SystemColor.activeCaption);
 		contentPane.setForeground(new Color(128, 128, 255));
@@ -116,68 +112,11 @@ public class InvoiceManagement extends JFrame {
 		lblNewLabel_3.setBounds(495, 14, 59, 14);
 		panel.add(lblNewLabel_3);
 		
-		JPanel panel_1 = new JPanel();
-		panel_1.setBounds(10, 129, 720, 107);
-		contentPane.add(panel_1);
-		panel_1.setLayout(null);
-		
 		Customer customer = DBOperation.queryCustomer(customerId, conn);
-		
-		txtAddress = new JTextField();
-		txtAddress.setEditable(false);
-		txtAddress.setEnabled(false);
-		txtAddress.setColumns(10);
-		txtAddress.setBounds(434, 31, 111, 20);
-		panel_1.add(txtAddress);
-		txtAddress.setText(customer.getAddress());
-		
-		txtCustomerId = new JTextField();
-		txtCustomerId.setEditable(false);
-		txtCustomerId.setEnabled(false);
-		txtCustomerId.setBounds(107, 31, 111, 20);
-		panel_1.add(txtCustomerId);
-		txtCustomerId.setColumns(10);
-		txtCustomerId.setText(String.valueOf(customerId));
-		
-		JLabel lblNewLabel_2_1 = new JLabel("Customer name:");
-		lblNewLabel_2_1.setBounds(10, 62, 97, 20);
-		panel_1.add(lblNewLabel_2_1);
-		
-		JLabel lblNewLabel_2_2 = new JLabel("Address:");
-		lblNewLabel_2_2.setBounds(337, 31, 87, 20);
-		panel_1.add(lblNewLabel_2_2);
-		
-		txtCustomerName = new JTextField();
-		txtCustomerName.setEditable(false);
-		txtCustomerName.setEnabled(false);
-		txtCustomerName.setColumns(10);
-		txtCustomerName.setBounds(107, 62, 111, 20);
-		panel_1.add(txtCustomerName);
-		txtCustomerName.setText(customer.getCustomerName());
-		
-		JLabel lblNewLabel_2_3 = new JLabel("Phone numbers:");
-		lblNewLabel_2_3.setBounds(337, 62, 97, 20);
-		panel_1.add(lblNewLabel_2_3);
-		
-		JLabel lblNewLabel_2 = new JLabel("Customer ID:");
-		lblNewLabel_2.setBounds(10, 31, 87, 20);
-		panel_1.add(lblNewLabel_2);
-		
-		txtPhonenumbers = new JTextField();
-		txtPhonenumbers.setEditable(false);
-		txtPhonenumbers.setEnabled(false);
-		txtPhonenumbers.setColumns(10);
-		txtPhonenumbers.setBounds(434, 62, 111, 20);
-		panel_1.add(txtPhonenumbers);
-		txtPhonenumbers.setText(customer.getPhoneNumbers());
-		
-		JLabel lblNewLabel_1 = new JLabel("Customer Information");
-		lblNewLabel_1.setBounds(10, 0, 162, 20);
-		panel_1.add(lblNewLabel_1);
 		
 		JPanel panel_1_1 = new JPanel();
 		panel_1_1.setLayout(null);
-		panel_1_1.setBounds(10, 247, 720, 65);
+		panel_1_1.setBounds(10, 129, 720, 65);
 		contentPane.add(panel_1_1);
 		
 		txtBoothId = new JTextField();
@@ -193,6 +132,7 @@ public class InvoiceManagement extends JFrame {
 		panel_1_1.add(lblNewLabel_2_4);
 		
 		Booth booth = DBOperation.queryBoothInfo(boothId, conn);
+		
 		txtBoothName = new JTextField();
 		txtBoothName.setEditable(false);
 		txtBoothName.setEnabled(false);
@@ -211,13 +151,13 @@ public class InvoiceManagement extends JFrame {
 		
 		
 		JScrollPane scrollPane = new JScrollPane();
-		scrollPane.setBounds(10, 350, 720, 152);
+		scrollPane.setBounds(10, 230, 720, 152);
 		contentPane.add(scrollPane);
 		
 		txtTotal = new JTextField();
 		txtTotal.setEnabled(false);
 		txtTotal.setEditable(false);
-		txtTotal.setBounds(625, 513, 105, 20);
+		txtTotal.setBounds(625, 393, 105, 20);
 		contentPane.add(txtTotal);
 		txtTotal.setColumns(10);
 		
@@ -240,11 +180,11 @@ public class InvoiceManagement extends JFrame {
 		
 		JLabel lblNewLabel_4 = new JLabel("Total");
 		lblNewLabel_4.setFont(new Font("Tahoma", Font.PLAIN, 15));
-		lblNewLabel_4.setBounds(568, 513, 47, 20);
+		lblNewLabel_4.setBounds(568, 393, 47, 20);
 		contentPane.add(lblNewLabel_4);
 		
 		JLabel lblNewLabel_5 = new JLabel("Selected Item List");
-		lblNewLabel_5.setBounds(20, 333, 108, 14);
+		lblNewLabel_5.setBounds(10, 205, 108, 14);
 		contentPane.add(lblNewLabel_5);
 	}
 	public void searchData() {

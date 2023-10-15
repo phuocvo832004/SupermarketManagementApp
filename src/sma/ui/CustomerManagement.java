@@ -164,7 +164,7 @@ public class CustomerManagement extends JFrame {
 		
 		scrollPane.setViewportView(table);
 		
-
+		searchData();
 		
 		JPanel panel_2 = new JPanel();
 		panel_2.setBounds(10, 542, 1095, 39);
@@ -222,27 +222,6 @@ public class CustomerManagement extends JFrame {
 		});
 		panel_2.add(btnSearch);
 		
-		JButton btnDelete = new JButton("Delete");
-		btnDelete.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				
-				JOptionPane.showOptionDialog(null, "Confirm to delete?", "Confirm Delete", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE, null, null, btnDelete);
-
-				int row = table.getSelectedRow();
-				Customer customer = new Customer();
-				customer.setCustomerId(Integer.parseInt(table.getValueAt(row, 0).toString()));
-				String result = DBOperation.deleteCustomer(customer.getCustomerId(), conn);
-				
-				txtCustomerId.setText("");
-				txtCustomerName.setText("");
-				txtPhonenumbers.setText("");
-				txtAddress.setText("");
-				searchData();
-				
-			}
-		});
-		panel_2.add(btnDelete);
-		
 		JButton btnResetTable = new JButton("Reset Table");
 		btnResetTable.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -260,12 +239,16 @@ public class CustomerManagement extends JFrame {
 		btnItemList.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 
-				int row = table.getSelectedRow();
-				int customerId =Integer.parseInt(table.getValueAt(row, 0).toString());
-				Customer customer = DBOperation.queryCustomer(customerId, conn);
-				
-				CustomerInvoice customerInvoice = new CustomerInvoice(customer);
-				customerInvoice.show();
+				if(table.isRowSelected(table.getSelectedRow())) {
+					int row = table.getSelectedRow();
+					int customerId =Integer.parseInt(table.getValueAt(row, 0).toString());
+					Customer customer = DBOperation.queryCustomer(customerId, conn);
+					
+					CustomerInvoice customerInvoice = new CustomerInvoice(customer);
+					customerInvoice.show();
+				}else {
+					JOptionPane.showMessageDialog(null, "Please choose a customer!");
+				}
 			}
 		});
 		
@@ -273,8 +256,19 @@ public class CustomerManagement extends JFrame {
 		btnAddInvoice.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				
-				PutSelectedItem putSelectedItem = new PutSelectedItem();
-				putSelectedItem.show();
+				int row = table.getSelectedRow();
+				
+				
+				if(table.isRowSelected(row)) {
+					int customerId = Integer.parseInt(table.getValueAt(row, 0).toString());
+					String customerName = table.getValueAt(row, 1).toString();
+					String phonenumber = table.getValueAt(row, 2).toString();
+					PutSelectedItem2 putSelectedItem = new PutSelectedItem2(customerId, customerName, phonenumber);
+					putSelectedItem.show();
+				}else {
+					PutSelectedItem putSelectedItem = new PutSelectedItem();
+					putSelectedItem.show();
+				}
 				
 				
 			}
