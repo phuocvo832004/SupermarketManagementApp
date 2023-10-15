@@ -425,7 +425,7 @@ public class PutSelectedItem extends JFrame {
 		btnSave.setBounds(283, 62, 95, 26);
 		btnSave.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				
+				//save
 				int customerId = Integer.parseInt(txtCustomerId.getText());
 				int invoiceId = Integer.parseInt(txtInvoiceId.getText().toString());
 				String boothName = cbBoothId.getSelectedItem().toString();
