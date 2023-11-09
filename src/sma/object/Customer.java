@@ -8,6 +8,7 @@ public class Customer {
 	private String customerName;
 	private String phoneNumbers;
 	private String address;
+	private String level;
 	
 	public int getCustomerId() {
 		return customerId;
@@ -33,4 +34,11 @@ public class Customer {
 	public void setAddress(String address) {
 		this.address = address;
 	}
+	public String getLevel() {
+		return level;
+	}
+	public void setLevel(String level) {
+		this.level = level;
+	}
+	
 }

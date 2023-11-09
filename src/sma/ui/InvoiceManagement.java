@@ -57,6 +57,7 @@ public class InvoiceManagement extends JFrame {
 				try {
 //					InvoiceManagement frame = new InvoiceManagement();
 //					frame.setVisible(true);
+					
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -70,7 +71,7 @@ public class InvoiceManagement extends JFrame {
 	public InvoiceManagement(int customerId , int invoiceId, int boothId, String tradingTime ) {
 		setForeground(new Color(128, 128, 255));
 		setBackground(new Color(0, 0, 0));
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setBounds(100, 100, 756, 583);
 		contentPane = new JPanel();
 		contentPane.setBackground(SystemColor.activeCaption);

@@ -41,7 +41,7 @@ public class SupermarketManagement extends JFrame {
 	public SupermarketManagement() {
 		setTitle("Supermarket Management");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 891, 199);
+		setBounds(100, 100, 547, 136);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 
@@ -49,7 +49,7 @@ public class SupermarketManagement extends JFrame {
 		contentPane.setLayout(null);
 		
 		JPanel panel = new JPanel();
-		panel.setBounds(10, 10, 857, 246);
+		panel.setBounds(10, 10, 511, 76);
 		contentPane.add(panel);
 		panel.setLayout(null);
 		
@@ -61,19 +61,8 @@ public class SupermarketManagement extends JFrame {
 				customerManagement.show();
 			}
 		});
-		btnNewButton.setBounds(34, 27, 213, 40);
+		btnNewButton.setBounds(10, 27, 213, 40);
 		panel.add(btnNewButton);
-		
-		JButton btnInvoiceManagement = new JButton("Invoice Management");
-		btnInvoiceManagement.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				
-				PutSelectedItem putSelectedItem = new PutSelectedItem();
-				putSelectedItem.show();
-			}
-		});
-		btnInvoiceManagement.setBounds(290, 27, 213, 40);
-		panel.add(btnInvoiceManagement);
 		
 		JButton btnItemManagement = new JButton("Item Management");
 		btnItemManagement.addActionListener(new ActionListener() {
@@ -83,7 +72,7 @@ public class SupermarketManagement extends JFrame {
 				itemManagement.show();
 			}
 		});
-		btnItemManagement.setBounds(551, 27, 213, 40);
+		btnItemManagement.setBounds(288, 27, 213, 40);
 		panel.add(btnItemManagement);
 	}
 }

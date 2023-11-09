@@ -12,11 +12,14 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import com.mysql.cj.xdevapi.Result;
+
 import sma.object.Booth;
 import sma.object.Category;
 import sma.object.Customer;
 import sma.object.Invoice;
 import sma.object.Item;
+import sma.object.Level;
 import sma.object.Measurement;
 
 public class DBOperation {
@@ -37,6 +40,7 @@ public class DBOperation {
 	public static final String quantity = "quantity";
 	public static final String unitPrice = "unitPrice";
 	public static final String price = "price";
+	public static final String level = "level";
 
 	/**
 	 * create connection 
@@ -65,7 +69,7 @@ public class DBOperation {
 
 	public static String insertCustomer (Customer customer, Connection conn) {
 
-		String sql = "INSERT INTO CUSTOMERS (CUSTOMER_ID, CUSTOMER_NAME, PHONENUMBERS, ADDRESS) VALUES (?, ?, ?, ?)";
+		String sql = "INSERT INTO CUSTOMERS (CUSTOMER_ID, CUSTOMER_NAME, PHONENUMBERS, ADDRESS, LEVEL) VALUES (?, ?, ?, ?, ?)";
 
 		try {
 
@@ -74,6 +78,8 @@ public class DBOperation {
 			statement.setString(2, customer.getCustomerName());
 			statement.setString(3, customer.getPhoneNumbers());
 			statement.setString(4, customer.getAddress());
+			statement.setString(5, "NEW");
+
 
 			int rowsInserted = statement.executeUpdate();
 			if (rowsInserted > 0) {
@@ -110,24 +116,45 @@ public class DBOperation {
 		}
 		return "Failed";
 	}
-	
+
+	public static String deleteCustomer(int customerId, Connection conn) {
+
+		String sql = "DELETE FROM CUSTOMERS WHERE CUSTOMER_ID = ?";
+
+		try {
+			PreparedStatement statement = conn.prepareStatement(sql);
+			statement.setInt(1, customerId);
+
+			int rowsInserted = statement.executeUpdate();
+			if (rowsInserted > 0) {
+				System.out.println("A customer was deleted successfully!");
+				return "Delete successfully";
+			}
+
+		}catch (SQLException ex) {
+			ex.printStackTrace();
+		}
+		return "Failed";
+
+	}
+
 	public static boolean checkExistPhonenumbers(String phoneNumber, Connection conn) {
 
-	    String sql = "SELECT PHONENUMBERS FROM CUSTOMERS WHERE PHONENUMBERS = ?";
+		String sql = "SELECT PHONENUMBERS FROM CUSTOMERS WHERE PHONENUMBERS = ?";
 
-	    try {
-	        PreparedStatement statement = conn.prepareStatement(sql);
-	        statement.setString(1, phoneNumber);
-	        ResultSet result = statement.executeQuery();
-	        while(result.next()) {
-	        	
-	        	return true;
-	        }
-	    } catch (SQLException e) {
-	        e.printStackTrace();
-	        
-	    }
-	    return false;
+		try {
+			PreparedStatement statement = conn.prepareStatement(sql);
+			statement.setString(1, phoneNumber);
+			ResultSet result = statement.executeQuery();
+			while(result.next()) {
+
+				return true;
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+
+		}
+		return false;
 	}
 
 
@@ -146,12 +173,13 @@ public class DBOperation {
 				String customerName = result.getString("CUSTOMER_NAME");
 				String phoneNumbers = result.getString("PHONENUMBERS");
 				String address = result.getString("ADDRESS");
+				String level = result.getString("LEVEL");
 
 				customer.setCustomerId(customerId1);
 				customer.setCustomerName(customerName);
 				customer.setPhoneNumbers(phoneNumbers);
 				customer.setAddress(address);
-
+				customer.setLevel(level);
 
 
 			}
@@ -173,18 +201,9 @@ public class DBOperation {
 
 		boolean needAnd = false;
 
-		if(conditionMap.containsKey(customerId)) {
-
-			sql = sql + "CUSTOMER_ID = '" + conditionMap.get(customerId) + "'"; 
-			needAnd = true;
-		}
-
 		if(conditionMap.containsKey(customerName)) {
 
-			if(needAnd) {
-				sql = sql + " AND ";
-			}
-			sql = sql + "CUSTOMER_NAME = '" + conditionMap.get(customerName) + "'"; 
+			sql = sql + "LOWER(CUSTOMER_NAME) LIKE LOWER('" + conditionMap.get(customerName) + "')"; 
 			needAnd = true;
 		}
 
@@ -193,7 +212,7 @@ public class DBOperation {
 			if(needAnd) {
 				sql = sql + " AND ";
 			}
-			sql = sql + "PHONENUMBERS = '" + conditionMap.get(phoneNumbers) + "'"; 
+			sql = sql + "LOWER(PHONENUMBERS) LIKE LOWER('" + conditionMap.get(phoneNumbers) + "')"; 
 			needAnd = true;
 		}
 
@@ -202,7 +221,16 @@ public class DBOperation {
 			if(needAnd) {
 				sql = sql + " AND ";
 			}
-			sql = sql + "ADDRESS = '" + conditionMap.get(address) + "'"; 
+			sql = sql + "LOWER(ADDRESS) LIKE LOWER('" + conditionMap.get(address) + "')"; 
+
+		}
+
+		if(conditionMap.containsKey(level)) {
+
+			if(needAnd) {
+				sql = sql + " AND ";
+			}
+			sql = sql + "LOWER(LEVEL) LIKE LOWER('" + conditionMap.get(level) + "')"; 
 
 		}
 
@@ -218,12 +246,14 @@ public class DBOperation {
 				String customerName = result.getString("CUSTOMER_NAME");
 				String phoneNumbers = result.getString("PHONENUMBERS");
 				String address = result.getString("ADDRESS");
+				String level = result.getString("LEVEL");
 
 				Customer customer = new Customer();
 				customer.setCustomerId(customerId);
 				customer.setCustomerName(customerName);
 				customer.setPhoneNumbers(phoneNumbers);
 				customer.setAddress(address);
+				customer.setLevel(level);
 
 				customers.add(customer);
 
@@ -233,6 +263,7 @@ public class DBOperation {
 		}
 		return customers;
 	}
+
 
 	public static String insertItem(Item item, Connection conn) {
 
@@ -521,7 +552,7 @@ public class DBOperation {
 			ResultSet result = statement.executeQuery(sql);
 
 			while (result.next()){
-				
+
 				booth.setBoothId(result.getInt("booth_ID"));
 				booth.setBoothName(result.getString("booth_NAME"));
 
@@ -532,7 +563,7 @@ public class DBOperation {
 
 		return booth;
 	}
-	
+
 	public static Booth queryBoothInfo(int boothId, Connection conn) {
 
 		String sql = "SELECT * FROM BOOTH_INFO WHERE BOOTH_ID ='" + boothId + "'";
@@ -543,7 +574,7 @@ public class DBOperation {
 			ResultSet result = statement.executeQuery(sql);
 
 			while (result.next()){
-				
+
 				booth.setBoothId(result.getInt("booth_ID"));
 				booth.setBoothName(result.getString("booth_NAME"));
 
@@ -589,6 +620,30 @@ public class DBOperation {
 
 		return booths;
 
+	}
+
+	public static List<Level> queryLevels ( Connection conn) {
+
+		String sql = "SELECT * FROM LEVEL";
+
+		List<Level> levels = new ArrayList<Level>();
+		try {
+			Statement statement = conn.createStatement();
+			ResultSet result = statement.executeQuery(sql);
+
+			while(result.next()) {
+				String level = result.getString("LEVEL");
+
+				Level level1 = new Level();
+				level1.setLevel(level);
+				levels.add(level1);
+			}
+		}catch (SQLException e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
+
+		return levels;
 	}
 
 	public static List<Category> queryCategories (Connection conn){
@@ -911,9 +966,9 @@ public class DBOperation {
 		System.out.println("Max customer id = " + max );
 		return max;
 	}
-	
+
 	public static int getMaxItemId(Connection conn) {
-		
+
 		String sql = "SELECT MAX(ITEM_ID) AS MAX FROM ITEMS ";
 		int max =0;
 		try {
@@ -929,30 +984,24 @@ public class DBOperation {
 		}
 		System.out.println("Max item id = " + max );
 		return max;
-		
+
 	}
 
 	public static boolean existsPhone(String phoneNumbers, Connection conn) {
-	    String sql = "SELECT PHONENUMBERS FROM CUSTOMERS WHERE PHONENUMBERS = ?";
-	    try {
-	        
-	        PreparedStatement preparedStatement = conn.prepareStatement(sql);
-	        preparedStatement.setString(1, phoneNumbers);
-	        ResultSet resultSet = preparedStatement.executeQuery();
-
-	        
-	        if (resultSet.next()) {
-	            
-	            return true;
-	        } else {
-	           
-	            return false;
-	        }
-	    } catch (SQLException e) {
-	        e.printStackTrace();
-	        return false; 
-	    }
+		String query = "SELECT * FROM customers WHERE PHONENUMBERS = ?";
+		try {
+			PreparedStatement stmt = conn.prepareStatement(query);
+			stmt.setString(1, phoneNumbers);
+			ResultSet rs = stmt.executeQuery();
+			if (rs.next()) {
+				return true;
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return false;
 	}
+
 
 	public static Customer queryCustomerByPhone(String phoneNumbers, Connection conn) {
 
@@ -969,11 +1018,13 @@ public class DBOperation {
 				String customerName = result.getString("CUSTOMER_NAME");
 				String phonenumbers = result.getString("PHONENUMBERS");
 				String address = result.getString("ADDRESS");
+				String level = result.getString("LEVEL");
 
 				customer.setCustomerId(customerId1);
 				customer.setCustomerName(customerName);
 				customer.setPhoneNumbers(phonenumbers);
 				customer.setAddress(address);
+				customer.setLevel(level);
 			}
 
 		}catch (SQLException e) {
@@ -1013,14 +1064,14 @@ public class DBOperation {
 
 		return "Failed";
 	}
-	
+
 	public static String insertInvoiceDetail(int invoiceId, Item item, Connection conn) {
 		String sql = "INSERT INTO INVOICE_DETAIL (INVOICE_ID, ITEM_ID, ITEM_NAME, QUANTITY, UNIT_PRICE, UPDATED_DATE) VALUES (?, ?, ?, ?, ?, ?)";
 		SimpleDateFormat formatter = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 		Date date = new Date();
 		String currentTime = formatter.format(date);
 		try {
-	
+
 			PreparedStatement statement = conn.prepareStatement(sql);
 			statement.setInt(1, invoiceId);
 			statement.setInt(2, item.getItemId());
@@ -1028,20 +1079,62 @@ public class DBOperation {
 			statement.setInt(4, item.getQuantity());
 			statement.setFloat(5, item.getUnitPrice());
 			statement.setString(6, currentTime);
-	
-	
+
+
 			int rowsInserted = statement.executeUpdate();
 			if (rowsInserted > 0) {
 				System.out.println("A new invoice_detail was inserted successfully!");
 				return "A new Invoice Detail was inserted successfully!";
 			}
-	
+
 		}catch (SQLException ex) {
 			ex.printStackTrace();
 		}
-	
+
 		return "Failed";
 	}
 
+	public static int invoiceQuantity(int customerId, Connection conn) {
+	    String sql = "SELECT COUNT(INVOICE_ID) AS MAX FROM CUSTOMER_INVOICE WHERE CUSTOMER_ID=?";
+	    int max = 0;
+	    try {
+	        PreparedStatement statement = conn.prepareStatement(sql);
+	        statement.setInt(1, customerId);
+	        ResultSet result = statement.executeQuery(); //
+	        if(result.next()) {
+	            max = result.getInt("MAX");
+	        }
+	    } catch (SQLException ex) {
+	        ex.printStackTrace();
+	    }
+	    return max;
+	}
+
+
+	public static String updateLevel(int customerId, Connection conn) {
+	    int level =  DBOperation.invoiceQuantity(customerId, conn);
+	    String sql = "";
+	    if(level < 10) {
+	        sql = " UPDATE CUSTOMERS SET LEVEL= 'NEW' WHERE CUSTOMER_ID=?";
+	    } else if(level < 30) {
+	        sql = " UPDATE CUSTOMERS SET LEVEL= 'SILVER' WHERE CUSTOMER_ID=?";
+	    } else if(level < 50) {
+	        sql = " UPDATE CUSTOMERS SET LEVEL= 'GOLD' WHERE CUSTOMER_ID=?";
+	    } else if(level < 80) {
+	        sql = " UPDATE CUSTOMERS SET LEVEL= 'DIAMOND' WHERE CUSTOMER_ID=?";
+	    } else {
+	        sql = " UPDATE CUSTOMERS SET LEVEL= 'VIP' WHERE CUSTOMER_ID=?";
+	    }
+
+	    try {
+	        PreparedStatement statement = conn.prepareStatement(sql);
+	        statement.setInt(1, customerId);
+	        statement.executeUpdate(); 
+	        System.out.println("Update level customer successfully!");
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    }
+	    return "FAILED!";
+	}
 }
 
