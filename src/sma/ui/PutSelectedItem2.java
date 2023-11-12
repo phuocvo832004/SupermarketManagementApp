@@ -163,7 +163,7 @@ public class PutSelectedItem2 extends JFrame {
 
 		table.addMouseListener(new MouseAdapter() {
 			@Override
-			public void mouseClicked(MouseEvent e) {
+			public void mousePressed(MouseEvent e) {
 
 				int row = table.getSelectedRow();
 				String itemId = table.getValueAt(row, 0).toString();
@@ -171,6 +171,31 @@ public class PutSelectedItem2 extends JFrame {
 
 				txtQuantity.setText("");
 				txtQuantity.requestFocus();
+			}
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				if (e.getClickCount() == 2) {
+					int row = table.getSelectedRow();
+					int itemId = Integer.parseInt(table.getValueAt(row, 0).toString());
+					Item item = DBOperation.queryItem(itemId, conn);
+					item.setQuantity(1);
+					List<Item> items = new ArrayList<>();
+					items.add(item);
+					searchData(items);
+					float total = 0;
+					for(int i = 0; i<table2.getRowCount(); i++) {
+
+						total += Float.parseFloat(table2.getValueAt(i, 4).toString());
+					}
+
+					txtTotal.setText(String.valueOf(total));
+
+					txtQuantity.setText(null);
+
+
+					txtItemId.setText("");
+					searchData1(txtItemId.getText());
+				}
 			}
 		});
 		String[] columnNames = {"Item ID", "Item Name", "Category", "Measurement", "Remaining", "Unit Price"};
@@ -190,7 +215,7 @@ public class PutSelectedItem2 extends JFrame {
 
 			}
 		});
-		String[] columnNames1 = {"Item ID", "Item Name", "Quantity", "Unit Price", "Price"};
+		String[] columnNames1 = {" ", "Item ID", "Item Name", "Quantity", "Unit Price", "Price"};
 		(model2).setColumnIdentifiers(columnNames1);
 
 		scrollPane_1.setViewportView(table2);
@@ -222,18 +247,14 @@ public class PutSelectedItem2 extends JFrame {
 		btnNewButton_1.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 
+				int row = table.getSelectedRow();
+				int itemId = Integer.parseInt(table.getValueAt(row, 0).toString());
+				Item item = DBOperation.queryItem(itemId, conn);
 				if(txtQuantity.getText() == null || txtQuantity.getText().isEmpty()) {
-
-					JOptionPane.showMessageDialog(null, "Please fill in Quantity!");
-					txtQuantity.requestFocus();
-					return;
+					item.setQuantity(1);
 
 				}else {
-					int row = table.getSelectedRow();
-					int itemId = Integer.parseInt(table.getValueAt(row, 0).toString());
-					Item item = DBOperation.queryItem(itemId, conn);
 					if(!txtQuantity.getText().matches("\\d+")) {
-
 						JOptionPane.showMessageDialog(null, "Please fill correct datatypes in Quantity!");
 						txtQuantity.setText(null);
 						txtQuantity.requestFocus();
@@ -241,19 +262,20 @@ public class PutSelectedItem2 extends JFrame {
 					}else {
 						item.setQuantity(Integer.parseInt(txtQuantity.getText()));
 					}
-					List<Item> items = new ArrayList<>();
-					items.add(item);
-					searchData(items);
-					float total = 0;
-					for(int i = 0; i<table2.getRowCount(); i++) {
-
-						total += Float.parseFloat(table2.getValueAt(i, 4).toString());
-					}
-
-					txtTotal.setText(String.valueOf(total));
-
-					txtQuantity.setText(null);
 				}
+				List<Item> items = new ArrayList<>();
+				items.add(item);
+				searchData(items);
+				float total = 0;
+				for(int i = 0; i<table2.getRowCount(); i++) {
+
+					total += Float.parseFloat(table2.getValueAt(i, 4).toString());
+				}
+
+				txtTotal.setText(String.valueOf(total));
+
+				txtQuantity.setText(null);
+
 
 				txtItemId.setText("");
 				searchData1(txtItemId.getText());
@@ -328,40 +350,39 @@ public class PutSelectedItem2 extends JFrame {
 		txtQuantity = new JTextField();
 		txtQuantity.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				if(!txtQuantity.getText().matches("\\d+")) {
 
-					JOptionPane.showMessageDialog(null, "Please fill correct datatypes in Quantity!");
-					txtQuantity.setText(null);
-					return;
-				}
-
+				int row = table.getSelectedRow();
+				int itemId = Integer.parseInt(table.getValueAt(row, 0).toString());
+				Item item = DBOperation.queryItem(itemId, conn);
 				if(txtQuantity.getText() == null || txtQuantity.getText().isEmpty()) {
-
-					JOptionPane.showMessageDialog(null, "Please fill in Quantity!");
-					return;
+					item.setQuantity(1);
 
 				}else {
-					int row = table.getSelectedRow();
-					int itemId = Integer.parseInt(table.getValueAt(row, 0).toString());
-					Item item = DBOperation.queryItem(itemId, conn);
-					item.setQuantity(Integer.parseInt(txtQuantity.getText()));
-					List<Item> items = new ArrayList<>();
-					items.add(item);
-					searchData(items);
-					float total = 0;
-					for(int i = 0; i<table2.getRowCount(); i++) {
-
-						total += Float.parseFloat(table2.getValueAt(i, 4).toString());
+					if(!txtQuantity.getText().matches("\\d+")) {
+						JOptionPane.showMessageDialog(null, "Please fill correct datatypes in Quantity!");
+						txtQuantity.setText(null);
+						txtQuantity.requestFocus();
+						return;
+					}else {
+						item.setQuantity(Integer.parseInt(txtQuantity.getText()));
 					}
-
-					txtTotal.setText(String.valueOf(total));
-
-					txtQuantity.setText(null);
 				}
+				List<Item> items = new ArrayList<>();
+				items.add(item);
+				searchData(items);
+				float total = 0;
+				for(int i = 0; i<table2.getRowCount(); i++) {
+
+					total += Float.parseFloat(table2.getValueAt(i, 4).toString());
+				}
+
+				txtTotal.setText(String.valueOf(total));
+
+				txtQuantity.setText(null);
+
 
 				txtItemId.setText("");
 				searchData1(txtItemId.getText());
-
 			}
 		});
 		txtQuantity.setText((String) null);

@@ -5,10 +5,7 @@ import java.awt.EventQueue;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
-import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableCellRenderer;
-import javax.swing.table.TableColumn;
 
 import sma.db.DBOperation;
 import sma.object.Customer;
@@ -19,21 +16,16 @@ import javax.swing.JOptionPane;
 import java.awt.Font;
 import javax.swing.SwingConstants;
 
-import java.awt.Checkbox;
 import java.awt.Color;
-import java.awt.Component;
 
 import javax.swing.JTextField;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
-import javax.swing.DefaultCellEditor;
 import javax.swing.JButton;
-import javax.swing.JCheckBox;
 
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.sql.Connection;
@@ -190,6 +182,7 @@ public class CustomerManagement extends JFrame {
 		btnNewButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				AddCustomerDialog addCustomerDialog = new AddCustomerDialog();
+				addCustomerDialog.setLocationRelativeTo(null);
 				addCustomerDialog.addWindowListener(new WindowAdapter() {
 					@Override
 					public void windowClosed(WindowEvent e) {
@@ -214,21 +207,25 @@ public class CustomerManagement extends JFrame {
 		JButton btnDelete = new JButton("Delete");
 		btnDelete.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				Vector<Integer> v = new Vector<>();
-				for(int i=0;i<table.getRowCount();i++) {
+				int result = JOptionPane.showOptionDialog(null, "Confirm to delete?", "Confirm Delete", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE, null, null, null);
+				if(result == JOptionPane.YES_OPTION) {
+					Vector<Integer> v = new Vector<>();
+					for(int i=0;i<table.getRowCount();i++) {
 
-					if(table.getValueAt(i, 0).toString() == "true") v.add(Integer.parseInt(table.getValueAt(i, 1).toString()));
+						if(table.getValueAt(i, 0).toString() == "true") v.add(Integer.parseInt(table.getValueAt(i, 1).toString()));
+					}
+					for(int i=0;i<v.size();i++) {
+
+						DBOperation.deleteCustomer(v.get(i), conn);
+					}
+					txtCustomerId.setText("");
+					txtCustomerName.setText("");
+					txtPhonenumbers.setText("");
+					txtAddress.setText("");     
+					searchData();
+				}else {
+					
 				}
-				for(int i=0;i<v.size();i++) {
-
-					DBOperation.deleteCustomer(v.get(i), conn);
-				}
-				txtCustomerId.setText("");
-				txtCustomerName.setText("");
-				txtPhonenumbers.setText("");
-				txtAddress.setText("");     
-				searchData();
-
 			}
 		});
 		panel_2.add(btnDelete);
@@ -249,7 +246,7 @@ public class CustomerManagement extends JFrame {
 				customer.setPhoneNumbers(phoneNumbers);
 				customer.setAddress(address);
 
-				String result = DBOperation.updateCustomer(customer, conn);
+				DBOperation.updateCustomer(customer, conn);
 
 				if(customerId == 0 || customerName == null || phoneNumbers == null || address == null)
 				{
@@ -349,10 +346,13 @@ public class CustomerManagement extends JFrame {
 		panel_2.add(btnAddInvoice);
 		panel_2.add(btnItemList);
 
-		JButton btnCancel = new JButton("Cancel");
+		JButton btnCancel = new JButton("Log out");
 		btnCancel.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 
+				SaleManagement SaleManagement = new SaleManagement();
+				SaleManagement.setVisible(true);
+				SaleManagement.setLocationRelativeTo(null);
 				dispose();
 			}
 		});

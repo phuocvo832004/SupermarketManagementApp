@@ -33,8 +33,22 @@ public class CustomerInvoice extends JFrame {
 	private JTextField txtCustomerId;
 	private JTextField txtCustomerName;
 	private JTable table2;
-	DefaultTableModel model = new DefaultTableModel();
-	DefaultTableModel model2 = new DefaultTableModel();
+	DefaultTableModel model = new DefaultTableModel() {
+		@Override
+		public boolean isCellEditable(int row, int column) {
+			//all cells false
+			return false;
+		}
+
+	};
+	DefaultTableModel model2 = new DefaultTableModel() {
+		@Override
+		public boolean isCellEditable(int row, int column) {
+			//all cells false
+			return false;
+		}
+
+	};
 
 	static Connection conn = DBOperation.createConnection("jdbc:mysql://localhost:3306/supermarket", "phuocvo", "123456");
 
@@ -121,7 +135,7 @@ public class CustomerInvoice extends JFrame {
 		lblNewLabel_1_1.setBounds(326, 45, 100, 14);
 		panel.add(lblNewLabel_1_1);
 		
-		JLabel lblInvoiceDetail = new JLabel("Invoice Detail");
+		JLabel lblInvoiceDetail = new JLabel("Invoice Details");
 		lblInvoiceDetail.setBounds(20, 281, 133, 23);
 		contentPane.add(lblInvoiceDetail);
 		

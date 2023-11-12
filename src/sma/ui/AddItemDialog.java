@@ -46,7 +46,9 @@ public class AddItemDialog extends JFrame {
 			public void run() {
 				try {
 					AddItemDialog frame = new AddItemDialog();
+					frame.setLocationRelativeTo(null);
 					frame.setVisible(true);
+					
 				} catch (Exception e) {
 					e.printStackTrace();
 				}

@@ -15,7 +15,7 @@ import java.awt.event.ActionEvent;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 
-public class SupermarketManagement extends JFrame {
+public class SaleManagement extends JFrame {
 
 	private JPanel contentPane;
 
@@ -26,8 +26,9 @@ public class SupermarketManagement extends JFrame {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					SupermarketManagement frame = new SupermarketManagement();
+					SaleManagement frame = new SaleManagement();
 					frame.setVisible(true);
+					frame.setLocationRelativeTo(null);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -38,10 +39,11 @@ public class SupermarketManagement extends JFrame {
 	/**
 	 * Create the frame.
 	 */
-	public SupermarketManagement() {
+	public SaleManagement() {
 		setTitle("Supermarket Management");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 547, 136);
+		setLocationRelativeTo(null);
+		setBounds(100, 100, 493, 139);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 
@@ -49,7 +51,7 @@ public class SupermarketManagement extends JFrame {
 		contentPane.setLayout(null);
 		
 		JPanel panel = new JPanel();
-		panel.setBounds(10, 10, 511, 76);
+		panel.setBounds(10, 10, 459, 82);
 		contentPane.add(panel);
 		panel.setLayout(null);
 		
@@ -58,21 +60,24 @@ public class SupermarketManagement extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				
 				CustomerManagement customerManagement = new CustomerManagement();
-				customerManagement.show();
+				customerManagement.setLocationRelativeTo(null);
+				customerManagement.setVisible(true);
+				dispose();
 			}
 		});
 		btnNewButton.setBounds(10, 27, 213, 40);
 		panel.add(btnNewButton);
 		
-		JButton btnItemManagement = new JButton("Item Management");
-		btnItemManagement.addActionListener(new ActionListener() {
+		JButton btnInvoiceManagement = new JButton("Invoice Management");
+		btnInvoiceManagement.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				
-				ItemManagement itemManagement = new ItemManagement();
-				itemManagement.show();
+				PutSelectedItem3 putSelectedItem = new PutSelectedItem3();
+				putSelectedItem.setVisible(true);
+				putSelectedItem.setLocationRelativeTo(null);
+				dispose();
 			}
 		});
-		btnItemManagement.setBounds(288, 27, 213, 40);
-		panel.add(btnItemManagement);
+		btnInvoiceManagement.setBounds(236, 27, 213, 40);
+		panel.add(btnInvoiceManagement);
 	}
 }

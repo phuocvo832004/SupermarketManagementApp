@@ -44,7 +44,7 @@ import javax.swing.LayoutStyle.ComponentPlacement;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 
-public class PutSelectedItem extends JFrame {
+public class PutSelectedItem3 extends JFrame {
 
 	private JPanel contentPane;
 	private JTextField txtCustomerId;
@@ -97,7 +97,7 @@ public class PutSelectedItem extends JFrame {
 	/**
 	 * Create the frame.
 	 */
-	public PutSelectedItem() {
+	public PutSelectedItem3() {
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setTitle("Put item to cart");
 		setBounds(100, 100, 961, 715);
@@ -594,12 +594,14 @@ public class PutSelectedItem extends JFrame {
 
 
 
-		JButton btnNewButton = new JButton("Cancel");
+		JButton btnNewButton = new JButton("Log out");
 		btnNewButton.setBounds(836, 447, 89, 23);
 		panel_1.add(btnNewButton);
 		btnNewButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-
+				SaleManagement SaleManagement = new SaleManagement();
+				SaleManagement.setVisible(true);
+				SaleManagement.setLocationRelativeTo(null);
 				dispose();
 			}
 		});

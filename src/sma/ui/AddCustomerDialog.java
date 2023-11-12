@@ -42,7 +42,9 @@ public class AddCustomerDialog extends JFrame {
 			public void run() {
 				try {
 					AddCustomerDialog frame = new AddCustomerDialog();
+					frame.setLocationRelativeTo(null);
 					frame.setVisible(true);
+					
 					frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -55,7 +57,8 @@ public class AddCustomerDialog extends JFrame {
 	 * Create the frame.
 	 */
 	public AddCustomerDialog() {
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		setLocationRelativeTo(null);
 		setBounds(100, 100, 721, 288);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -154,16 +157,7 @@ public class AddCustomerDialog extends JFrame {
 		    }
 		});
 
-		btnApply.setBounds(469, 26, 99, 23);
+		btnApply.setBounds(576, 27, 99, 23);
 		panel_1.add(btnApply);
-
-		JButton btnCancel = new JButton("Cancel");
-		btnCancel.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				dispose();
-			}
-		});
-		btnCancel.setBounds(578, 26, 99, 23);
-		panel_1.add(btnCancel);
 	}
 }

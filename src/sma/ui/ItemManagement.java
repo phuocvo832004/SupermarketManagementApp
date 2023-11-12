@@ -180,7 +180,7 @@ public class ItemManagement extends JFrame {
 		table = new JTable();
 		table.addMouseListener(new MouseAdapter() {
 			@Override
-			public void mouseClicked(MouseEvent e) {
+			public void mousePressed(MouseEvent e) {
 
 				int row = table.getSelectedRow();
 
@@ -211,6 +211,7 @@ public class ItemManagement extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 
 				AddItemDialog addItemDialog = new AddItemDialog();
+				addItemDialog.setLocationRelativeTo(null);
 				addItemDialog.addWindowListener(new WindowAdapter() {
 					@Override
 					public void windowClosed(WindowEvent e) {
@@ -328,12 +329,14 @@ public class ItemManagement extends JFrame {
 		btnResetTable.setBounds(469, 10, 143, 42);
 		panel_2.add(btnResetTable);
 
-		JButton btnCancel = new JButton("Cancel");
+		JButton btnCancel = new JButton("Log out");
 		btnCancel.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 
-				dispose();
-			}
+				LogInDialog logInDialog = new LogInDialog();
+				logInDialog.setLocationRelativeTo(null);
+				logInDialog.setVisible(true);
+				dispose();			}
 		});
 		btnCancel.setBounds(729, 124, 116, 28);
 		panel_2.add(btnCancel);

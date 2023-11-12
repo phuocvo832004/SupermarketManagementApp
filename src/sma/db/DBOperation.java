@@ -12,15 +12,17 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import com.mysql.cj.xdevapi.Result;
+import javax.swing.JOptionPane;
 
 import sma.object.Booth;
+import sma.object.Campaign;
 import sma.object.Category;
 import sma.object.Customer;
 import sma.object.Invoice;
 import sma.object.Item;
 import sma.object.Level;
 import sma.object.Measurement;
+import sma.ui.CustomerLevel;
 
 public class DBOperation {
 
@@ -62,9 +64,7 @@ public class DBOperation {
 		} catch (SQLException ex) {
 			ex.printStackTrace();
 		}
-
 		return conn;
-
 	}
 
 	public static String insertCustomer (Customer customer, Connection conn) {
@@ -562,6 +562,28 @@ public class DBOperation {
 		}
 
 		return booth;
+	}
+	
+	public static List<CustomerLevel> queryCustomerLevel(Connection conn){
+		
+		String sql = "SELECT * FROM CUSTOMER_LEVEL";
+		List<CustomerLevel> customerLevels = new ArrayList<CustomerLevel>();
+		
+		try {
+			Statement statement = conn.createStatement();
+			ResultSet result = statement.executeQuery(sql);
+			while(result.next()) {
+				
+				CustomerLevel customerLevel = new CustomerLevel();
+				customerLevel.setLevel(result.getString("LEVEL"));
+				
+				customerLevels.add(customerLevel);
+			}
+			
+		}catch (SQLException e) {
+			// TODO: handle exception
+		}
+		return customerLevels;
 	}
 
 	public static Booth queryBoothInfo(int boothId, Connection conn) {
@@ -1114,13 +1136,27 @@ public class DBOperation {
 	public static String updateLevel(int customerId, Connection conn) {
 	    int level =  DBOperation.invoiceQuantity(customerId, conn);
 	    String sql = "";
-	    if(level < 10) {
+	    String doanhso = "SELECT SUM(TOTAL) AS total_sum FROM CUSTOMER_INVOICE WHERE YEAR(TRADING_TIME) = YEAR(CURDATE()) AND CUSTOMER_ID = ?";
+	    int doanhso1 = 0;
+
+	    try {
+	        PreparedStatement statement = conn.prepareStatement(doanhso);
+	        statement.setInt(1, customerId);
+	        ResultSet result = statement.executeQuery();
+	        if (result.next()) {
+	            doanhso1 = result.getInt("total_sum");
+	        }
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    }
+
+	    if(doanhso1 < 1000) {
 	        sql = " UPDATE CUSTOMERS SET LEVEL= 'NEW' WHERE CUSTOMER_ID=?";
-	    } else if(level < 30) {
+	    } else if(doanhso1 < 3000) {
 	        sql = " UPDATE CUSTOMERS SET LEVEL= 'SILVER' WHERE CUSTOMER_ID=?";
-	    } else if(level < 50) {
+	    } else if(doanhso1 < 5000) {
 	        sql = " UPDATE CUSTOMERS SET LEVEL= 'GOLD' WHERE CUSTOMER_ID=?";
-	    } else if(level < 80) {
+	    } else if(doanhso1 < 8000) {
 	        sql = " UPDATE CUSTOMERS SET LEVEL= 'DIAMOND' WHERE CUSTOMER_ID=?";
 	    } else {
 	        sql = " UPDATE CUSTOMERS SET LEVEL= 'VIP' WHERE CUSTOMER_ID=?";
@@ -1131,10 +1167,45 @@ public class DBOperation {
 	        statement.setInt(1, customerId);
 	        statement.executeUpdate(); 
 	        System.out.println("Update level customer successfully!");
+	        return "SUCCESS!";
 	    } catch (SQLException e) {
 	        e.printStackTrace();
 	    }
 	    return "FAILED!";
+	}
+	public static List<Campaign> queryCampaign(Connection conn) {
+		
+		String sql = "SELECT * FROM CAMPAIGN ";
+		List<Campaign> campaigns = new ArrayList<Campaign>();
+		
+		try {
+	        PreparedStatement statement = conn.prepareStatement(sql);
+	        ResultSet result = statement.executeQuery(sql);
+	        while(result.next()) {
+	   		 int campaignId = result.getInt("CAMPAIGN_ID");
+			 String campaignName = result.getString("CAMPAIGN_NAME");
+			 String target_customer = result.getString("TARGET_CUSTOMER_LEVEL");
+			 String campaignCode = result.getString("CAMPAIGN_CODE");
+			 String status = result.getString("STATUS");
+			 String msg_content = result.getString("MSG_CONTENT");
+			 String campaign_timestamp = result.getString("CAMPAIGN_TIMESTAMP");
+	        	
+			 Campaign campaign = new Campaign();
+			 campaign.setCampaignId(campaignId);
+			 campaign.setCampaignName(campaignName);
+			 campaign.setTarget_customer(target_customer);
+			 campaign.setCampaignCode(campaignCode);
+			 campaign.setStatus(status);
+			 campaign.setMsg_content(msg_content);
+			 campaign.setCampaign_timestamp(campaign_timestamp);
+			 
+			 campaigns.add(campaign);
+	        }
+
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    }
+	    return campaigns;
 	}
 }
 
