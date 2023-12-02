@@ -138,10 +138,21 @@ public class AddCustomerDialog extends JFrame {
 		            JOptionPane.showMessageDialog(null,"Please fill in all the required information.");
 		            return;
 		        } else if(DBOperation.existsPhone(phoneNumbers, conn)) {
-		            JOptionPane.showMessageDialog(null, "Phonenumbers existed!");
-		            txtPhonenumbers.setText("");
-		            txtPhonenumbers.requestFocus();
-		            return;
+		            
+		        	int result = JOptionPane.showOptionDialog(null, "Your phone number has previously existed, would you like to reactivate your old account(Yes) or sign up(No)?", "Reactive account dialog", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE, null, null, null);
+		            if(result == JOptionPane.YES_OPTION) {
+		            	Customer customer = DBOperation.queryCustomerByPhone(phoneNumbers, conn);
+		            	DBOperation.updateRemoveCustomer(customer, conn);
+		            }else {
+			            Customer customer = new Customer();
+			            customer.setCustomerId(customerId);
+			            customer.setCustomerName(customerName);
+			            customer.setPhoneNumbers(phoneNumbers);
+			            customer.setAddress(address);
+
+			            DBOperation.insertCustomer(customer, conn);
+			            JOptionPane.showMessageDialog(null, "Insert new customer successfully!");
+		            }
 		        } else {
 		            Customer customer = new Customer();
 		            customer.setCustomerId(customerId);

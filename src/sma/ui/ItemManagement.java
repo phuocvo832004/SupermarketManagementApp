@@ -62,8 +62,8 @@ public class ItemManagement extends JFrame {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					ItemManagement frame = new ItemManagement();
-					frame.setVisible(true);
+//					ItemManagement frame = new ItemManagement();
+//					frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -74,7 +74,7 @@ public class ItemManagement extends JFrame {
 	/**
 	 * Create the frame.
 	 */
-	public ItemManagement() {
+	public ItemManagement(int i) {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 889, 717);
 		contentPane = new JPanel();
@@ -332,11 +332,18 @@ public class ItemManagement extends JFrame {
 		JButton btnCancel = new JButton("Log out");
 		btnCancel.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-
-				LogInDialog logInDialog = new LogInDialog();
-				logInDialog.setLocationRelativeTo(null);
-				logInDialog.setVisible(true);
-				dispose();			}
+				if(i == 13) {
+					LogInDialog logInDialog = new LogInDialog();
+					logInDialog.setLocationRelativeTo(null);
+					logInDialog.setVisible(true);
+					dispose();	
+				}else {
+					AdminManagement adminManagement = new AdminManagement(i);
+					adminManagement.setLocationRelativeTo(null);
+					adminManagement.setVisible(true);
+					dispose();
+				}
+			}
 		});
 		btnCancel.setBounds(729, 124, 116, 28);
 		panel_2.add(btnCancel);

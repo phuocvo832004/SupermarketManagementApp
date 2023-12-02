@@ -12,6 +12,10 @@ import sma.object.Booth;
 import sma.object.Customer;
 import sma.object.Invoice;
 import sma.object.Item;
+
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -20,9 +24,12 @@ import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.JScrollPane;
 import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.sql.Connection;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import javax.swing.JTable;
@@ -31,6 +38,11 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.print.PageFormat;
+import java.awt.print.Printable;
+import java.awt.print.PrinterException;
+import java.awt.print.PrinterJob;
+
 import javax.swing.SwingConstants;
 import javax.swing.JComboBox;
 import javax.swing.DefaultComboBoxModel;
@@ -77,6 +89,8 @@ public class PutSelectedItem2 extends JFrame {
 	private JTextField txtTotal;
 	private JTextField txtQuantity;
 	private JTextField txtPhonenumbers;
+	private InvoiceManagement invoiceManagement;
+	private InvoiceManagement2 invoiceManagement2;
 
 	/**
 	 * Launch the application.
@@ -97,7 +111,7 @@ public class PutSelectedItem2 extends JFrame {
 	/**
 	 * Create the frame.
 	 */
-	public PutSelectedItem2(int customerId, String customerName, String phonenumber) {
+	public PutSelectedItem2(int customerId, String customerName, String phonenumber,  int i) {
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setTitle("Put item to cart");
 		setBounds(100, 100, 961, 715);
@@ -241,44 +255,21 @@ public class PutSelectedItem2 extends JFrame {
 
 			cbBoothId.addItem(new BoothItem(b.getBoothId(), b.getBoothName()));
 		}
+		if(i == 14 || i ==15) {
+			for(int d =0;d<cbBoothId.getItemCount();d++) {
+				cbBoothId.setSelectedIndex(1);
+			}
+		}else {
+			for(int d =0;d<cbBoothId.getItemCount();d++) {
+				cbBoothId.setSelectedIndex(0);
+			}
+		}
 
 		JButton btnNewButton_1 = new JButton("Add");
 		btnNewButton_1.setBounds(10, 11, 116, 26);
 		btnNewButton_1.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-
-				int row = table.getSelectedRow();
-				int itemId = Integer.parseInt(table.getValueAt(row, 0).toString());
-				Item item = DBOperation.queryItem(itemId, conn);
-				if(txtQuantity.getText() == null || txtQuantity.getText().isEmpty()) {
-					item.setQuantity(1);
-
-				}else {
-					if(!txtQuantity.getText().matches("\\d+")) {
-						JOptionPane.showMessageDialog(null, "Please fill correct datatypes in Quantity!");
-						txtQuantity.setText(null);
-						txtQuantity.requestFocus();
-						return;
-					}else {
-						item.setQuantity(Integer.parseInt(txtQuantity.getText()));
-					}
-				}
-				List<Item> items = new ArrayList<>();
-				items.add(item);
-				searchData(items);
-				float total = 0;
-				for(int i = 0; i<table2.getRowCount(); i++) {
-
-					total += Float.parseFloat(table2.getValueAt(i, 4).toString());
-				}
-
-				txtTotal.setText(String.valueOf(total));
-
-				txtQuantity.setText(null);
-
-
-				txtItemId.setText("");
-				searchData1(txtItemId.getText());
+				addItem();
 			}
 		});
 
@@ -351,38 +342,7 @@ public class PutSelectedItem2 extends JFrame {
 		txtQuantity.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 
-				int row = table.getSelectedRow();
-				int itemId = Integer.parseInt(table.getValueAt(row, 0).toString());
-				Item item = DBOperation.queryItem(itemId, conn);
-				if(txtQuantity.getText() == null || txtQuantity.getText().isEmpty()) {
-					item.setQuantity(1);
-
-				}else {
-					if(!txtQuantity.getText().matches("\\d+")) {
-						JOptionPane.showMessageDialog(null, "Please fill correct datatypes in Quantity!");
-						txtQuantity.setText(null);
-						txtQuantity.requestFocus();
-						return;
-					}else {
-						item.setQuantity(Integer.parseInt(txtQuantity.getText()));
-					}
-				}
-				List<Item> items = new ArrayList<>();
-				items.add(item);
-				searchData(items);
-				float total = 0;
-				for(int i = 0; i<table2.getRowCount(); i++) {
-
-					total += Float.parseFloat(table2.getValueAt(i, 4).toString());
-				}
-
-				txtTotal.setText(String.valueOf(total));
-
-				txtQuantity.setText(null);
-
-
-				txtItemId.setText("");
-				searchData1(txtItemId.getText());
+				addItem();
 			}
 		});
 		txtQuantity.setText((String) null);
@@ -459,23 +419,26 @@ public class PutSelectedItem2 extends JFrame {
 				int customerId = Integer.parseInt(txtCustomerId.getText());
 				int invoiceId = Integer.parseInt(txtInvoiceId.getText().toString());
 				int boothId = booth.getBoothId();
-				float total = Float.parseFloat(txtTotal.getText().toString());
+				String k = txtTotal.getText().toString(); 
+				NumberFormat format = NumberFormat.getInstance();
+				Number number;
+				try {
+					number = format.parse(k);
+					float total = number.floatValue();
 				if(!checkBoxMember.isSelected()) {
-
-
+					if(txtPhonenumbers.getText().isEmpty()) {
+						JOptionPane.showMessageDialog(null, "Please fill customer information or tick checkbox!");
+						return;
+					}
 				}else {
-
 					Customer customer = new Customer();
 					customer.setCustomerId(customerId);
 					customer.setCustomerName(txtCustomerName.getText());
 					customer.setPhoneNumbers(txtPhonenumbers.getText());
 					customer.setAddress(" ");
-
-					String r0 = DBOperation.insertCustomer(customer, conn);
-
-
+					DBOperation.insertCustomer(customer, conn);
 				}
-				String r1 = DBOperation.insertCustomerInvoice(customerId, invoiceId, boothId, total, conn);
+				DBOperation.insertCustomerInvoice(customerId, invoiceId, boothId, total, conn);
 
 				while(table2.getRowCount() > 0) {
 
@@ -487,21 +450,51 @@ public class PutSelectedItem2 extends JFrame {
 
 					item.setQuantity(quantity);
 
-					String result1 = DBOperation.insertInvoiceDetail(invoiceId, item, conn);
+					DBOperation.insertInvoiceDetail(invoiceId, item, conn);
 
 					model2.removeRow(0);
 				}
-
-				if(!checkBoxMember.isSelected()) {
-					InvoiceManagement i = new InvoiceManagement(Integer.parseInt(txtCustomerId.getText()), Integer.parseInt(txtInvoiceId.getText()), boothId, txtTradingTime.getText());
-					i.show();
-				}else {
-					InvoiceManagement2 i = new InvoiceManagement2(Integer.parseInt(txtCustomerId.getText()), Integer.parseInt(txtInvoiceId.getText()), boothId, txtTradingTime.getText());
-					i.show();
+		        if(!checkBoxMember.isSelected()) {
+		    		invoiceManagement = new InvoiceManagement(Integer.parseInt(txtCustomerId.getText()), Integer.parseInt(txtInvoiceId.getText()), boothId, txtTradingTime.getText());
+		            //invoiceManagement.setVisible(true);
+		        } else {
+		            invoiceManagement2 = new InvoiceManagement2(Integer.parseInt(txtCustomerId.getText()), Integer.parseInt(txtInvoiceId.getText()), boothId, txtTradingTime.getText());
+		            //invoiceManagement2.setVisible(true);
+		        }
+				PrinterJob job = PrinterJob.getPrinterJob();
+				job.setPrintable(new Printable() {
+				    public int print(Graphics pg, PageFormat pf, int pageNum) {
+				        if (pageNum > 0) {
+				            return Printable.NO_SUCH_PAGE;
+				        }
+				        Graphics2D g2 = (Graphics2D) pg;
+				        g2.translate(pf.getImageableX(), pf.getImageableY());
+				        double scaleX = pf.getImageableWidth() / invoiceManagement.getWidth();
+				        double scaleY = pf.getImageableHeight() / invoiceManagement.getHeight();
+				        g2.scale(scaleX, scaleY);
+						if(!checkBoxMember.isSelected()) {
+							invoiceManagement.paint(g2);
+						}else {
+							invoiceManagement2.paint(g2);
+						}
+				        return Printable.PAGE_EXISTS;
+				    }
+				});
+				boolean ok = job.printDialog();
+				if (ok) {
+				    try {
+				        job.print();
+				    } catch (PrinterException ex) {
+				        /* The job did not successfully complete */
+				    }
 				}
+
 				DBOperation.updateLevel(customerId, conn);
 				dispose();
-
+				} catch (ParseException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
 			}
 		});
 
@@ -516,20 +509,24 @@ public class PutSelectedItem2 extends JFrame {
 				Booth booth = DBOperation.queryBoothInfo(boothName, conn);
 				int boothId = booth.getBoothId();
 				float total = Float.parseFloat(txtTotal.getText().toString());
+				DecimalFormat formatter = new DecimalFormat("#,###.00");
+				formatter.format(total);
 				if(!checkBoxMember.isSelected()) {
-
+					if(txtPhonenumbers.getText().isEmpty()) {
+						JOptionPane.showMessageDialog(null, "Please fill customer information or tick checkbox!");
+						return;
+					}
 				}else {
-
 					Customer customer = new Customer();
 					customer.setCustomerId(customerId);
 					customer.setCustomerName(txtCustomerName.getText());
 					customer.setPhoneNumbers(txtPhonenumbers.getText());
 					customer.setAddress(" ");
 
-					String r0 = DBOperation.insertCustomer(customer, conn);
+					DBOperation.insertCustomer(customer, conn);
 
 				}
-				String r1 = DBOperation.insertCustomerInvoice(customerId, invoiceId, boothId, total, conn);
+				DBOperation.insertCustomerInvoice(customerId, invoiceId, boothId, total, conn);
 
 				while(table2.getRowCount() > 0) {
 
@@ -541,7 +538,7 @@ public class PutSelectedItem2 extends JFrame {
 
 					item.setQuantity(quantity);
 
-					String result1 = DBOperation.insertInvoiceDetail(invoiceId, item, conn);
+					DBOperation.insertInvoiceDetail(invoiceId, item, conn);
 
 					model2.removeRow(0);
 				}
@@ -617,4 +614,52 @@ public class PutSelectedItem2 extends JFrame {
 		this.invalidate();
 		this.repaint();
 	}
+	public boolean existedItem(String n) {
+
+		for(int g=0;g<table2.getRowCount();g++) {
+			if(n.equals(table2.getValueAt(g, 1).toString())) {
+				return true;
+			}
+		}
+		return false;
+	}
+	public void addItem() {
+		if(existedItem(txtItemId.getText())) {
+			JOptionPane.showMessageDialog(null, "Existed item in cart!");
+			return;
+		}else {
+			int row = table.getSelectedRow();
+			int itemId = Integer.parseInt(table.getValueAt(row, 0).toString());
+			Item item = DBOperation.queryItem(itemId, conn);
+			if(txtQuantity.getText() == null || txtQuantity.getText().isEmpty()) {
+				item.setQuantity(1);
+
+			}else {
+				if(!txtQuantity.getText().matches("\\d+")) {
+					JOptionPane.showMessageDialog(null, "Please fill correct datatypes in Quantity!");
+					txtQuantity.setText(null);
+					txtQuantity.requestFocus();
+					return;
+				}else {
+					item.setQuantity(Integer.parseInt(txtQuantity.getText()));
+				}
+			}
+			List<Item> items = new ArrayList<>();
+			items.add(item);
+			searchData(items);
+			float total = 0;
+			for(int i = 0; i<table2.getRowCount(); i++) {
+
+				total += Float.parseFloat(table2.getValueAt(i, 5).toString());
+				DecimalFormat formatter = new DecimalFormat("#,###.00");
+				String formatted = formatter.format(total);
+				txtTotal.setText(formatted);
+			}
+			txtQuantity.setText(null);
+			txtItemId.setText("");
+			searchData1(txtItemId.getText());
+	        
+		}
+	}
+
 }

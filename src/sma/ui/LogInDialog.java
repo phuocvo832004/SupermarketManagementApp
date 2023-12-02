@@ -25,6 +25,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.awt.event.ActionEvent;
 
 public class LogInDialog extends JFrame {
@@ -32,7 +33,9 @@ public class LogInDialog extends JFrame {
 	private JPanel contentPane;
 	private JTextField txtUserId;
 	private JPasswordField txtPassword;
-
+	private static int userId;
+	static Connection conn = DBOperation.createConnection("jdbc:mysql://localhost:3306/supermarket", "phuocvo", "123456");
+	private HashMap<Integer, Integer> userBoothIds = new HashMap<Integer, Integer>();
 	/**
 	 * Launch the application.
 	 */
@@ -82,11 +85,21 @@ public class LogInDialog extends JFrame {
 		panel.add(lblPassword);
 
 		txtUserId = new JTextField();
+		txtUserId.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				txtPassword.requestFocus();
+			}
+		});
 		txtUserId.setBounds(99, 10, 137, 20);
 		panel.add(txtUserId);
 		txtUserId.setColumns(10);
 
 		txtPassword = new JPasswordField();
+		txtPassword.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				logIn();
+			}
+		});
 		txtPassword.setBounds(99, 49, 137, 22);
 		panel.add(txtPassword);
 
@@ -119,54 +132,92 @@ public class LogInDialog extends JFrame {
 		JButton btnLogIn = new JButton("Log in");
 		btnLogIn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				String userId = txtUserId.getText();
-				char[] password = txtPassword.getPassword();
-				String passwordString = new String(password);
-
-				if(userId.isEmpty() || passwordString.isEmpty()) {
-					JOptionPane.showMessageDialog(null, "Please fill empty fields!");
-				} else {
-					Connection conn = DBOperation.createConnection("jdbc:mysql://localhost:3306/supermarket", "phuocvo", "123456");
-
-					String sql = "SELECT * FROM user WHERE USER_ID = ? AND PASSWORD = ?";
-					PreparedStatement statement;
-					try {
-						statement = conn.prepareStatement(sql);
-						statement.setString(1, userId);
-						statement.setString(2, passwordString);
-						ResultSet result = statement.executeQuery();
-						if(result.next()) {
-							String role = result.getString("role");
-							if(role.equals("SALE_PERSON")) {
-								
-								SaleManagement saleManagement = new SaleManagement();
-								saleManagement.setLocationRelativeTo(null);
-								saleManagement.setVisible(true);
-								dispose();
-							}else {
-								
-								ItemManagement itemManagement = new ItemManagement();
-								itemManagement.setLocationRelativeTo(null);
-								itemManagement.setVisible(true);
-								dispose();
-							}
-						} else {
-							JOptionPane.showMessageDialog(null, "Invalid user_id or password.");
-							txtUserId.setText("");
-							txtPassword.setText("");
-						}
-						conn.close();
-					} catch (SQLException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					}
-
-				}
+				logIn();
 			}
+
 		});
-
-
 		btnLogIn.setBounds(378, 235, 100, 28);
 		contentPane.add(btnLogIn);
 	}
+	public void logIn() {
+	    String userIdText = txtUserId.getText();
+	    char[] password = txtPassword.getPassword();
+	    String passwordString = new String(password);
+		if(userIdText.isEmpty() || passwordString.isEmpty()) {
+			JOptionPane.showMessageDialog(null, "Please fill empty field!");
+			txtUserId.requestFocus();
+			return;
+		} else {
+			userId = Integer.parseInt(userIdText);
+			Connection conn = DBOperation.createConnection("jdbc:mysql://localhost:3306/supermarket", "phuocvo", "123456");
+			String sql = "SELECT * FROM user WHERE USER_ID = ? AND PASSWORD = ?";
+			PreparedStatement statement;
+			try {
+				statement = conn.prepareStatement(sql);
+				statement.setInt(1, userId);
+				statement.setString(2, passwordString);
+				ResultSet result = statement.executeQuery();
+				if(result.next()) {
+					String role = result.getString("ROLE");
+					int boothId = result.getInt("BOOTH_ID");
+					userBoothIds.put(userId, boothId);
+					if(role.equals("SALE_PERSON")) {
+
+						SaleManagement saleManagement = new SaleManagement(getUserId());
+						saleManagement.setLocationRelativeTo(null);
+						saleManagement.setVisible(true);
+						dispose();
+					}else {
+
+						if(role.equals("ADMIN")) {
+							AdminManagement adminManagement = new AdminManagement(getUserId());
+							adminManagement.setLocationRelativeTo(null);
+							adminManagement.setVisible(true);
+							dispose();
+						}else {
+							ItemManagement itemManagement = new ItemManagement(getUserId());
+							itemManagement.setLocationRelativeTo(null);
+							itemManagement.setVisible(true);
+							dispose();
+						}
+					}
+				} else {
+					JOptionPane.showMessageDialog(null, "Invalid user_id or password.");
+					txtUserId.setText("");
+					txtPassword.setText("");
+					txtUserId.requestFocus();
+				}
+				conn.close();
+			} catch (SQLException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+
+		}
+	}
+	public static int getBoothId() {
+		String sql = "SELECT BOOTH_ID AS BID FROM USER WHERE USER_ID = ?";
+		int bid = 0;
+		try {
+			PreparedStatement statement = conn.prepareStatement(sql);
+			try {
+				statement.setInt(1, userId);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			ResultSet result = statement.executeQuery();
+
+			if (result.next()){
+				bid = result.getInt("BID");
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return bid;
+	}
+	public static int getUserId() {
+		return userId;
+	}
+
 }

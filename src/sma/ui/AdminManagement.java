@@ -12,13 +12,12 @@ import javax.swing.JButton;
 import java.awt.event.ActionListener;
 import java.sql.Connection;
 import java.awt.event.ActionEvent;
-import javax.swing.JLabel;
-import javax.swing.JTextField;
 
-public class SaleManagement extends JFrame {
+public class AdminManagement extends JFrame {
 
 	private JPanel contentPane;
-
+	static Connection conn = DBOperation.createConnection("jdbc:mysql://localhost:3306/supermarket", "phuocvo", "123456");
+	private int k = LogInDialog.getBoothId();
 	/**
 	 * Launch the application.
 	 */
@@ -26,7 +25,7 @@ public class SaleManagement extends JFrame {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-//					SaleManagement frame = new SaleManagement(int i);
+//					AdminManagement frame = new AdminManagement(i);
 //					frame.setVisible(true);
 //					frame.setLocationRelativeTo(null);
 				} catch (Exception e) {
@@ -40,11 +39,11 @@ public class SaleManagement extends JFrame {
 	 * Create the frame.
 	 * @param i 
 	 */
-	public SaleManagement(int i) {
-		setTitle("Sale Management");
+	public AdminManagement(int i) {
+		setTitle("Admin Management");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setLocationRelativeTo(null);
-		setBounds(100, 100, 493, 201);
+		setBounds(100, 100, 712, 139);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 
@@ -52,7 +51,7 @@ public class SaleManagement extends JFrame {
 		contentPane.setLayout(null);
 		
 		JPanel panel = new JPanel();
-		panel.setBounds(10, 10, 459, 141);
+		panel.setBounds(10, 10, 677, 82);
 		contentPane.add(panel);
 		panel.setLayout(null);
 		
@@ -60,7 +59,7 @@ public class SaleManagement extends JFrame {
 		btnNewButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				
-				CustomerManagement customerManagement = new CustomerManagement(i);
+				CustomerManagement customerManagement = new CustomerManagement(k);
 				customerManagement.setLocationRelativeTo(null);
 				customerManagement.setVisible(true);
 				dispose();
@@ -78,19 +77,20 @@ public class SaleManagement extends JFrame {
 				dispose();
 			}
 		});
-		btnInvoiceManagement.setBounds(236, 27, 213, 40);
+		btnInvoiceManagement.setBounds(233, 27, 213, 40);
 		panel.add(btnInvoiceManagement);
 		
-		JButton btnLogOut = new JButton("Log out");
-		btnLogOut.addActionListener(new ActionListener() {
+		JButton btnInvoiceManagement_1 = new JButton("Item Management");
+		btnInvoiceManagement_1.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				LogInDialog logInDialog = new LogInDialog();
-				logInDialog.setLocationRelativeTo(null);
-				logInDialog.setVisible(true);
-				dispose();	
+				
+				ItemManagement itemManagement = new ItemManagement(i);
+				itemManagement.setLocationRelativeTo(null);
+				itemManagement.setVisible(true);
+				dispose();
 			}
 		});
-		btnLogOut.setBounds(360, 107, 89, 23);
-		panel.add(btnLogOut);
+		btnInvoiceManagement_1.setBounds(454, 27, 213, 40);
+		panel.add(btnInvoiceManagement_1);
 	}
 }

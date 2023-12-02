@@ -66,8 +66,8 @@ public class CustomerManagement extends JFrame {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					CustomerManagement frame = new CustomerManagement();
-					frame.setVisible(true);
+//					CustomerManagement frame = new CustomerManagement();
+//					frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -78,7 +78,7 @@ public class CustomerManagement extends JFrame {
 	/**
 	 * Create the frame.
 	 */
-	public CustomerManagement() {
+	public CustomerManagement(int i) {
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setTitle("CUSTOMER MANAGEMENT");
 		setBounds(100, 100, 1129, 627);
@@ -295,7 +295,7 @@ public class CustomerManagement extends JFrame {
 					Customer customer = DBOperation.queryCustomer(customerId, conn);
 
 					CustomerInvoice customerInvoice = new CustomerInvoice(customer);
-					customerInvoice.show();
+					customerInvoice.setVisible(true);
 				}else {
 					JOptionPane.showMessageDialog(null, "Please choose a customer!");
 				}
@@ -313,7 +313,7 @@ public class CustomerManagement extends JFrame {
 					int customerId = Integer.parseInt(table.getValueAt(row, 1).toString());
 					String customerName = table.getValueAt(row, 2).toString();
 					String phonenumber = table.getValueAt(row, 3).toString();
-					PutSelectedItem2 putSelectedItem = new PutSelectedItem2(customerId, customerName, phonenumber);
+					PutSelectedItem2 putSelectedItem = new PutSelectedItem2(customerId, customerName, phonenumber, i);
 					putSelectedItem.show();
 					putSelectedItem.addWindowListener(new WindowAdapter() {
 						@Override
@@ -326,7 +326,7 @@ public class CustomerManagement extends JFrame {
 						}
 					});
 				}else {
-					PutSelectedItem putSelectedItem = new PutSelectedItem();
+					PutSelectedItem putSelectedItem = new PutSelectedItem(i);
 					putSelectedItem.show();
 					putSelectedItem.addWindowListener(new WindowAdapter() {
 						@Override
@@ -349,11 +349,17 @@ public class CustomerManagement extends JFrame {
 		JButton btnCancel = new JButton("Log out");
 		btnCancel.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-
-				SaleManagement SaleManagement = new SaleManagement();
+				if(i == 12 || i ==15) {
+				SaleManagement SaleManagement = new SaleManagement(i);
 				SaleManagement.setVisible(true);
 				SaleManagement.setLocationRelativeTo(null);
 				dispose();
+			}else {
+				AdminManagement adminManagement = new AdminManagement(i);
+				adminManagement.setVisible(true);
+				adminManagement.setLocationRelativeTo(null);
+				dispose();	
+			}
 			}
 		});
 		panel_2.add(btnCancel);

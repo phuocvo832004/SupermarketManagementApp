@@ -43,6 +43,7 @@ public class DBOperation {
 	public static final String unitPrice = "unitPrice";
 	public static final String price = "price";
 	public static final String level = "level";
+	public static final String isActive = "isActive";
 
 	/**
 	 * create connection 
@@ -69,7 +70,7 @@ public class DBOperation {
 
 	public static String insertCustomer (Customer customer, Connection conn) {
 
-		String sql = "INSERT INTO CUSTOMERS (CUSTOMER_ID, CUSTOMER_NAME, PHONENUMBERS, ADDRESS, LEVEL) VALUES (?, ?, ?, ?, ?)";
+		String sql = "INSERT INTO CUSTOMERS (CUSTOMER_ID, CUSTOMER_NAME, PHONENUMBERS, ADDRESS, LEVEL, IS_ACTIVE) VALUES (?, ?, ?, ?, ?, ?)";
 
 		try {
 
@@ -79,6 +80,7 @@ public class DBOperation {
 			statement.setString(3, customer.getPhoneNumbers());
 			statement.setString(4, customer.getAddress());
 			statement.setString(5, "NEW");
+			statement.setString(6, "Y");
 
 
 			int rowsInserted = statement.executeUpdate();
@@ -107,7 +109,29 @@ public class DBOperation {
 
 			int rowsInserted = statement.executeUpdate();
 			if (rowsInserted > 0) {
-				System.out.println("A new user was updated successfully!");
+				System.out.println("A customer was updated successfully!");
+				return "Successful";
+			}
+
+		}catch (SQLException ex) {
+			ex.printStackTrace();
+		}
+		return "Failed";
+	}
+	
+	public static String updateRemoveCustomer(Customer customer, Connection conn) {
+		
+		String sql = "UPDATE CUSTOMERS SET IS_ACTIVE=? WHERE CUSTOMER_ID=?";
+		
+		try {
+
+			PreparedStatement statement = conn.prepareStatement(sql);
+			statement.setString(1, "Y");
+			statement.setInt(2, customer.getCustomerId());
+
+			int rowsInserted = statement.executeUpdate();
+			if (rowsInserted > 0) {
+				System.out.println("A customer was updated successfully!");
 				return "Successful";
 			}
 
@@ -119,11 +143,12 @@ public class DBOperation {
 
 	public static String deleteCustomer(int customerId, Connection conn) {
 
-		String sql = "DELETE FROM CUSTOMERS WHERE CUSTOMER_ID = ?";
+		String sql = "UPDATE CUSTOMERS SET IS_ACTIVE=? WHERE CUSTOMER_ID = ?";
 
 		try {
 			PreparedStatement statement = conn.prepareStatement(sql);
-			statement.setInt(1, customerId);
+			statement.setString(1, "N");
+			statement.setInt(2, customerId);
 
 			int rowsInserted = statement.executeUpdate();
 			if (rowsInserted > 0) {
@@ -137,6 +162,8 @@ public class DBOperation {
 		return "Failed";
 
 	}
+	
+	//public static boolean checkExistCustomers()
 
 	public static boolean checkExistPhonenumbers(String phoneNumber, Connection conn) {
 
@@ -165,7 +192,7 @@ public class DBOperation {
 		Customer customer = new Customer();
 		try {
 
-			Statement statement = conn.createStatement();
+			PreparedStatement statement = conn.prepareStatement(sql);
 			ResultSet result = statement.executeQuery(sql);
 			while (result.next()){
 
@@ -193,76 +220,76 @@ public class DBOperation {
 
 	public static List<Customer> queryCustomer(Map<String, String> conditionMap, Connection conn) {
 
-		String sql = "SELECT * FROM CUSTOMERS WHERE ";
+	    String sql = "SELECT * FROM CUSTOMERS WHERE IS_ACTIVE = 'Y' AND ";
 
-		if(conditionMap == null || conditionMap.isEmpty()) {
-			sql = sql.replace("WHERE", "");
-		}
+	    if(conditionMap == null || conditionMap.isEmpty()) {
+	        sql = sql.replace(" AND ", "");
+	    }
 
-		boolean needAnd = false;
+	    boolean needAnd = false;
 
-		if(conditionMap.containsKey(customerName)) {
+	    if(conditionMap.containsKey(customerName)) {
 
-			sql = sql + "LOWER(CUSTOMER_NAME) LIKE LOWER('" + conditionMap.get(customerName) + "')"; 
-			needAnd = true;
-		}
+	        sql = sql + "LOWER(CUSTOMER_NAME) LIKE LOWER('" + conditionMap.get(customerName) + "')"; 
+	        needAnd = true;
+	    }
 
-		if(conditionMap.containsKey(phoneNumbers)) {
+	    if(conditionMap.containsKey(phoneNumbers)) {
 
-			if(needAnd) {
-				sql = sql + " AND ";
-			}
-			sql = sql + "LOWER(PHONENUMBERS) LIKE LOWER('" + conditionMap.get(phoneNumbers) + "')"; 
-			needAnd = true;
-		}
+	        if(needAnd) {
+	            sql = sql + " AND ";
+	        }
+	        sql = sql + "LOWER(PHONENUMBERS) LIKE LOWER('" + conditionMap.get(phoneNumbers) + "')"; 
+	        needAnd = true;
+	    }
 
-		if(conditionMap.containsKey(address)) {
+	    if(conditionMap.containsKey(address)) {
 
-			if(needAnd) {
-				sql = sql + " AND ";
-			}
-			sql = sql + "LOWER(ADDRESS) LIKE LOWER('" + conditionMap.get(address) + "')"; 
+	        if(needAnd) {
+	            sql = sql + " AND ";
+	        }
+	        sql = sql + "LOWER(ADDRESS) LIKE LOWER('" + conditionMap.get(address) + "')"; 
 
-		}
+	    }
 
-		if(conditionMap.containsKey(level)) {
+	    if(conditionMap.containsKey(level)) {
 
-			if(needAnd) {
-				sql = sql + " AND ";
-			}
-			sql = sql + "LOWER(LEVEL) LIKE LOWER('" + conditionMap.get(level) + "')"; 
+	        if(needAnd) {
+	            sql = sql + " AND ";
+	        }
+	        sql = sql + "LOWER(LEVEL) LIKE LOWER('" + conditionMap.get(level) + "')"; 
 
-		}
+	    }
+	    List<Customer> customers = new ArrayList<Customer>();
 
-		List<Customer> customers = new ArrayList<Customer>();
+	    try {
 
-		try {
+	        Statement statement = conn.createStatement();
+	        ResultSet result = statement.executeQuery(sql);
+	        while (result.next()){
 
-			Statement statement = conn.createStatement();
-			ResultSet result = statement.executeQuery(sql);
-			while (result.next()){
+	            int customerId = result.getInt("CUSTOMER_ID");
+	            String customerName = result.getString("CUSTOMER_NAME");
+	            String phoneNumbers = result.getString("PHONENUMBERS");
+	            String address = result.getString("ADDRESS");
+	            String level = result.getString("LEVEL");
 
-				int customerId = result.getInt("CUSTOMER_ID");
-				String customerName = result.getString("CUSTOMER_NAME");
-				String phoneNumbers = result.getString("PHONENUMBERS");
-				String address = result.getString("ADDRESS");
-				String level = result.getString("LEVEL");
+	            Customer customer = new Customer();
+	            customer.setCustomerId(customerId);
+	            customer.setCustomerName(customerName);
+	            customer.setPhoneNumbers(phoneNumbers);
+	            customer.setAddress(address);
+	            customer.setLevel(level);
 
-				Customer customer = new Customer();
-				customer.setCustomerId(customerId);
-				customer.setCustomerName(customerName);
-				customer.setPhoneNumbers(phoneNumbers);
-				customer.setAddress(address);
-				customer.setLevel(level);
+	            customers.add(customer);
 
-				customers.add(customer);
-
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		return customers;
+	        }
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    }
+	    return customers;
 	}
+
 
 
 	public static String insertItem(Item item, Connection conn) {
@@ -1206,6 +1233,97 @@ public class DBOperation {
 	        e.printStackTrace();
 	    }
 	    return campaigns;
+	}
+	public static String addCampaign(Campaign campaign, Connection conn) {
+		String sql = "INSERT INTO CAMPAIGN (CAMPAIGN_ID, CAMPAIGN_NAME, TARGET_CUSTOMER_LEVEL, CAMPAIGN_CODE, STATUS, MSG_CONTENT, CAMPAIGN_TIMESTAMP) VALUES (?, ?, ?, ?, ?, ?, ?)";
+
+		try {
+			PreparedStatement statement = conn.prepareStatement(sql);
+			statement.setInt(1, campaign.getCampaignId());
+			statement.setString(2, campaign.getCampaignName());
+			statement.setString(3, campaign.getTarget_customer());
+			statement.setString(4, campaign.getCampaignCode());
+			statement.setString(5, campaign.getStatus());
+			statement.setString(6, campaign.getMsg_content());
+			statement.setString(7, campaign.getCampaign_timestamp());
+
+			int rowsInserted = statement.executeUpdate();
+			if (rowsInserted > 0) {
+				System.out.println("A new campaign was inserted successfully!");
+				return "Successful";
+			}
+
+		} catch (SQLException ex) {
+			ex.printStackTrace();
+		}
+		return "Failed";
+	}
+	
+	public static String updateCampaign(Campaign campaign, Connection conn) {
+		
+		String sql ="UPDATE CAMPAIGN SET CAMPAIGN_NAME = ?, TARGET_CUSTOMER_LEVEL = ?, CAMPAIGN_CODE = ?, STATUS = ?, MSG_CONTENT = ?, CAMPAIGN_TIMESTAMP = ? WHERE CAMPAIGN_ID = ?";
+		
+		try {
+
+			PreparedStatement statement = conn.prepareStatement(sql);
+			statement.setString(1, campaign.getCampaignName());
+			statement.setString(2, campaign.getTarget_customer());
+			statement.setString(3, campaign.getCampaignCode());
+			statement.setString(4, campaign.getStatus());
+			statement.setString(5, campaign.getMsg_content());
+			statement.setString(6, campaign.getCampaign_timestamp());
+			statement.setInt(7, campaign.getCampaignId());
+
+			int rowsInserted = statement.executeUpdate();
+			if (rowsInserted > 0) {
+				System.out.println("A new campaign was updated successfully!");
+				return "Successful";
+			}
+
+		}catch (SQLException ex) {
+			ex.printStackTrace();
+		}
+		return "Failed";
+	}
+	
+	public static String deleteCampaign(int campaignId, Connection conn) {
+		
+		String sql = "DELETE FROM CAMPAIGN WHERE CAMPAIGN_ID = ?";
+		
+		try {
+			PreparedStatement statement = conn.prepareStatement(sql);
+			statement.setInt(1, campaignId);
+
+			int rowsInserted = statement.executeUpdate();
+			if (rowsInserted > 0) {
+				System.out.println("A campaign was deleted successfully!");
+				return "Delete successfully";
+			}
+
+		}catch (SQLException ex) {
+			ex.printStackTrace();
+		}
+		return "Failed";
+	}
+	
+	public static int getCountCampaign(Connection conn) {
+		
+		String sql = "SELECT MAX(CAMPAIGN_ID) AS MAX FROM CAMPAIGN ";
+		int max =0;
+		try {
+			PreparedStatement statement = conn.prepareStatement(sql);
+			ResultSet result = statement.executeQuery(sql);
+
+			if (result.next()){
+				max = result.getInt("MAX");
+			}
+
+		}catch (SQLException e) {
+			e.printStackTrace();
+		}
+		System.out.println("Max campaign id = " + max );
+		return max;
+		
 	}
 }
 
